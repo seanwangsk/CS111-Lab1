@@ -1,0 +1,3 @@
+#! /bin/bash
+make
+./timetrash -p test-p-ok.sh

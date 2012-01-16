@@ -1,0 +1,115 @@
+make: Nothing to be done for `all'.
+size now is 2 
+s is 2, tmp is 1
+size now is 4 
+s is 4, tmp is 2
+size now is 8 
+s is 8, tmp is 4
+size now is 16 
+s is 16, tmp is 8
+size now is 32 
+s is 32, tmp is 16
+size now is 64 
+s is 64, tmp is 32
+size now is 128 
+s is 128, tmp is 64
+size now is 256 
+s is 256, tmp is 128
+size now is 512 
+s is 512, tmp is 256
+size now is 1024 
+s is 1024, tmp is 512
+size now is 2048 
+s is 2048, tmp is 1024
+#! /bin/sh
+
+# UCLA CS 111 Lab 1 - Test that valid syntax is processed correctly.
+
+tmp=$0-$$.tmp
+mkdir "$tmp" || exit
+
+(
+cd "$tmp" || exit
+
+cat >test.sh <<'EOF'
+true
+
+g++ -c foo.c
+
+: : :
+
+cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed!
+
+a b<c > d
+
+cat < /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed!
+
+a&&b||
+ c &&
+  d | e && f|
+
+g<h
+
+# This is a weird example: nobody would ever want to run this.
+a<b>c|d<e>f|g<h>i
+EOF
+
+cat >test.exp <<'EOF'
+# 1
+  true
+# 2
+  g++ -c foo.c
+# 3
+  : : :
+# 4
+      cat</etc/passwd \
+    |
+      tr a-z A-Z \
+    |
+      sort -u \
+  ||
+    echo sort failed!
+# 5
+  a b<c>d
+# 6
+      cat</etc/passwd \
+    |
+      tr a-z A-Z \
+    |
+      sort -u>out \
+  ||
+    echo sort failed!
+# 7
+        a \
+      &&
+        b \
+    ||
+      c \
+  &&
+      d \
+    |
+      e \
+  &&
+      f \
+    |
+      g<h
+# 8
+    a<b>c \
+  |
+    d<e>f \
+  |
+    g<h>i
+EOF
+
+../timetrash -p test.sh >test.out 2>test.err || exit
+
+diff -u test.exp test.out || exit
+test ! -s test.err || {
+  cat test.err
+  exit 1
+}
+
+) || exit
+
+rm -fr "$tmp"
+ÿ
