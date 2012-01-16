@@ -38,5 +38,8 @@ struct command
 
 struct command_stream
 {
-	char *stream;
+	char **line;
+        char *curLine; //current line
+        int curLineNum;//current line number
 };
+
