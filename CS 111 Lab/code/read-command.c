@@ -11,8 +11,8 @@
 enum state_type{
 	NORMAL,
 	IN_COMMENT,
-	IN_SPECIAL,
-	IN_SUSPEND,
+	WAIT_FOR_AND;
+	WAIT_FOR_OR;
 }
 
 struct parse_status{
@@ -37,12 +37,10 @@ make_command_stream (int (*get_next_byte) (void *),
 
   int curLineNum = 1;
 
-  char* buffer = checked_malloc(stmSz);
   char* ptr = buffer;
 
   char cGet;
-
-  do{
+    do{
 	cGet =get_next_byte(get_next_byte_argument);
 	if(status.state == IN_COMMENT){
 		if(cGet == '\n'){
@@ -56,25 +54,63 @@ make_command_stream (int (*get_next_byte) (void *),
 			break;
 		case '\n':
 			if before is not special mark,current end
+				
 			else
 			just ignore
 			curLineNum++;
 			break;
-		case ';'
-		case '':
+		case ';':
 			current end
-			put into buffer
-			status into SPECIAL
+		case '&':
+			if(status.state = WAIT_FOR_AND){ //&&
+				status.state = NORMAL;
+				*(ptr-1)='\0'; //elimate the former &
+				if(status.cmd_buffer!=NULL){
+					status.cmd_buffer.command[1] = curCmd
+				}
+			        put into buffer
+			        status into SPECIAL
+			}
+			else{
+				string_add(buffer,ptr,cGet);
+			}
 			break;
-		case normalword
-			string_add(buffer,ptr,cGet);
 		DEFAULT:
-			error(1,0,"parse error @ \d",curLineNum);
+			if(isNormalChar(cGet)){
+				string_add(buffer,ptr,cGet);
+			}
+			else{
+				error(1,0,"parse error @ \d",curLineNum);
+			}
 	}
   }while(cGet!=EOF);
   printf("%s",cmdStm->stream);
   return cmdStm;
 }
+
+command_t init_simple_command(command_t cmd){
+	cmd = checked_alloc(sizeof(struct command));
+  	cmd.type = SIMPLE_COMMAND;
+	cmd.word =  
+  	char*  = checked_malloc(stmSz);
+}
+
+
+void :
+current end
+
+int isNormalChar(char c){
+	        char* dict = "!%+,-./:@^_ \t";
+	        int isNormal = isalnum(c);
+		printf("isNormal result is %d\n",isNormal);
+		int i;
+		for(i=0;i<strlen(dict);i++){
+	                isNormal = isNormal | (c==dict[i]);
+			printf("with %c result is %d\n",dict[i],isNormal);
+	        }
+	        return isNormal;
+}
+
 
 void string_add(char* string, char* ptr, char cGet){
 	*ptr = cGet;
