@@ -8,28 +8,76 @@
 #include "alloc.h"
 #include <string.h>
 
+enum state_type{
+	NORMAL,
+	IN_COMMENT,
+	IN_SPECIAL,
+	IN_SUSPEND,
+}
+
+struct parse_status{
+	enum state_type state;
+	char suspend;
+	command_t cmd_buffer;
+}
+
+
+//question about \"
 command_stream_t
 make_command_stream (int (*get_next_byte) (void *),
 		     void *get_next_byte_argument)
 {
-  /* FIXME: Replace this with your implementation.  You may need to
-  //error (1, 0, "command reading not yet implemented");
 
-   [Modified by SK] Read the whole file into a char*,  overflow safe*/
   command_stream_t cmdStm  = checked_malloc(sizeof(struct command_stream));
   
   size_t stmSz = 100;//initial size set as 100
-  
-  cmdStm->stream = checked_malloc(stmSz);
-  char * ptr = cmdStm->stream;
-  int cGet;
+
+  struct parse_state status;
+  status.state = NORMAL;
+
+  int curLineNum = 1;
+
+  char* buffer = checked_malloc(stmSz);
+  char* ptr = buffer;
+
+  char cGet;
+
   do{
 	cGet =get_next_byte(get_next_byte_argument);
-	if(cGet == '#'){ //check comment
-		skip_until(get_next_byte,get_next_byte_argument,'\n');
+	if(status.state == IN_COMMENT){
+		if(cGet == '\n'){
+			status.state = NORMAL;
+		}
 	}
-	else{
-  		*ptr = cGet;
+	else{ //not in comment status
+		case '#': //step into comments
+			current end
+			status.state = IN_COMMENT;
+			break;
+		case '\n':
+			if before is not special mark,current end
+			else
+			just ignore
+			curLineNum++;
+			break;
+		case ';'
+		case '':
+			current end
+			put into buffer
+			status into SPECIAL
+			break;
+		case normalword
+			string_add(buffer,ptr,cGet);
+		DEFAULT:
+			error(1,0,"parse error @ \d",curLineNum);
+	}
+  }while(cGet!=EOF);
+  printf("%s",cmdStm->stream);
+  return cmdStm;
+}
+
+void string_add(char* string, char* ptr, char cGet){
+	*ptr = cGet;
 		ptr++;
 		//check if need resize the buffer
 		unsigned int offset = ptr-cmdStm->stream;
@@ -39,10 +87,6 @@ make_command_stream (int (*get_next_byte) (void *),
 			//printf("s is %d, offset is %d\n",s,offset);
 			ptr = cmdStm->stream + offset;
 		}
-	}
-  }while(cGet!=EOF);
-  printf("%s",cmdStm->stream);
-  return cmdStm;
 }
 
 void

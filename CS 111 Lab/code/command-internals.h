@@ -38,5 +38,6 @@ struct command
 
 struct command_stream
 {
-	char *stream;
+	command* stream;
+	int length; //total # of commands
 };
