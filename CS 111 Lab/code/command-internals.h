@@ -42,4 +42,5 @@ struct command_stream
 	int size; //total # of tokens
 	size_t maxsize;
 	char** ptr;
+	int curLineNum;
 };

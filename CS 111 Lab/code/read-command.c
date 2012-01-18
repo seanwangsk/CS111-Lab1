@@ -10,7 +10,7 @@
 #include <ctype.h>
 #define initsize 100//some problem
 
-enum state_type{
+enum token_state{
 	NORMAL,
 	IN_COMMENT,
 	WAIT_FOR_AND,
@@ -23,6 +23,10 @@ void init_command_stream(command_stream_t*);
 void change_last_token(command_stream_t, char*);
 void add_token(command_stream_t, char*);
 
+void parseSubshell(char**, int* , int*, int , command_t);
+void parseCommand(char**, int* , int*, int , command_t);
+
+
 //convert the input file char stream into token stream, ignore the comments
 command_stream_t
 make_command_stream (int (*get_next_byte) (void *),
@@ -32,7 +36,7 @@ make_command_stream (int (*get_next_byte) (void *),
   command_stream_t cmdStm;
   init_command_stream(&cmdStm);   
 
-  enum state_type state = NORMAL;
+  enum token_state state = NORMAL;
 
   int curLineNum = 1;
 
@@ -53,9 +57,6 @@ make_command_stream (int (*get_next_byte) (void *),
 			curLineNum++;
 		}
 	}
-	else if(state == WAIT_FOR_AND && cGet != '&'){
-		error(1,0,"parse error @ line %d\n",curLineNum);	
-	}
 	else{ //not in comment status
 	switch(cGet)
 		{
@@ -66,12 +67,13 @@ make_command_stream (int (*get_next_byte) (void *),
 				break;
 			case '&':
 				if(state == WAIT_FOR_AND){ //&&
-					add_token(cmdStm,"&&");
+					change_last_token(cmdStm,"&&");
 					state = NORMAL;
 				}
 				else{
 					add_token(cmdStm,buffer);
 					init_buffer(&buffer,&ptr);
+					add_token(cmdStm,"&");
 					state = WAIT_FOR_AND;
 				}
 				break;
@@ -111,8 +113,7 @@ make_command_stream (int (*get_next_byte) (void *),
 			case EOF:
 				break;
 			default: //normal word
-				if(isNormalChar(cGet)||cGet=='\n'||cGet=='&'
-						||cGet==';'){
+				if(isNormalChar(cGet)||cGet==';'){
 					*ptr = cGet;
 					ptr++;
 					//check if need resize the buffer
@@ -125,17 +126,16 @@ make_command_stream (int (*get_next_byte) (void *),
 					state = NORMAL;
 				}
 				else{
-					error(1,0,"parse error @ line %d\n",curLineNum);
+					error(1,0,"parse error @ %d\n",curLineNum);
 				}
 		}
 	}
   }while(cGet!=EOF);
   cmdStm->ptr = cmdStm->tokens; //init the ptr
-
+  cmdStm->curLineNum = 1;
   int i;
   for(i=0;i<cmdStm->size;i++){
   	printf("%s ",cmdStm->tokens[i]);//not work
-	cmdStm->ptr++;
   }
   return cmdStm;
 }
@@ -188,89 +188,242 @@ add_token(command_stream_t s, char* token){
 
 
 
+enum command_state{
+	SIMPLE_INIT,
+	SIMPLE_NO,
+	SIMPLE_INPUT,
+	SIMPLE_INPUT_FINISH,
+	SIMPLE_OUTPUT,
+	SIMPLE_OUTPUT_FINISH,
+};
+
+int 
+isEqual(char* a, char* b)
+{
+	int result = strcmp(a,b)?0:1;
+	return result;
+}
+
+int 
+isNormalToken(char* token)
+{
+	return (!isCombineToken(token) 
+		&& !isEqual(token,"<") 
+		&& !isEqual(token,">") 
+		&& !isEqual(token,"\n") 
+		&& !isEqual(token,";") 
+		&& !isEqual(token,"(") 
+		&& !isEqual(token,")"));
+}
+
+int 
+isCombineToken(char* token)
+{
+	return (isEqual(token,"|") ||
+		isEqual(token,"||") || 
+		isEqual(token,"&&") || 
+		isEqual(token,";"));
+}
+command_t push_command_buffer(command_t, char*);
+
 command_t
 read_command_stream (command_stream_t s)
-{
-  /* FIXME: Replace this with your implementation too.  */
-<<<<<<< HEAD
-    int *lineCount = 0;
-    int tokenIndex = 0;
-    char **tokenPtr = s->tokens;
+{   
+  command_t curCmd = checked_malloc(sizeof(struct command));
+  curCmd->type = SIMPLE_COMMAND;
+  command_t cmdBuffer = NULL;
+  
+  
+  unsigned int curCmdWordIndex;
+  size_t curCmdWordMax;
     
-    command_t buffer = checked_malloc(sizeof(struct command));
-    
-    while (tokenIndex < s->size)
-    {
-        printf("test\n");
-            
-        int charIndex = 0;
-        while (charIndex < strlen(tokenPtr[tokenIndex]))
-        {
-            printf("%c\n",tokenPtr[tokenIndex][charIndex]);
-            
-            if (tokenPtr[tokenIndex][charIndex] == '\n') //calculate the line number
-                *lineCount++;
-            
-            else if (tokenPtr[tokenIndex][charIndex] == '&') //&& AND Commands
-          //          if (peek(tokenPtr[tokenIndex][charIndex])== '&')
-                    
-                            
-                    
-            
-            
-            
-            charIndex++;
-        }
-        
-        tokenIndex++;
-    }
+  
+  enum command_state state = SIMPLE_INIT;   
+  int i;
 
-    
-    
-  error (1, 0, "command reading not yet implemented");
-=======
->>>>>>> 6d3114550ad85acd95f321e88ee588b0a64023cf
+  int curOffset = (s->ptr - s->tokens);
+  
+  for(i=curOffset; i < s->size;i++){
+	s->ptr++;
+
+  	char* token = s->tokens[i];
+	//printf("#%d token is %s\n",s->curLineNum,token);
+	if(isEqual(token,"\n")){
+		s->curLineNum++;
+	}
+	switch(state){
+		case SIMPLE_INIT:
+			//printf("simple_init\n");
+			if(isEqual(token, "\n")){
+				state = SIMPLE_INIT;	
+			}
+			else if(isNormalToken(token)){
+				curCmd->u.word = checked_malloc(initsize*sizeof(char*));
+				curCmdWordMax = initsize * sizeof(char*);
+				curCmd->u.word[0] = token;
+				curCmdWordIndex = 1; 
+				state = SIMPLE_NO;
+			}
+			else{
+				error(1,0,"error @ line %d\n",s->curLineNum);
+			} 
+			break;
+		case SIMPLE_NO:
+			//printf("no\n");
+			//printf("==%s==\n",token);
+			if(isEqual(token,"\n")){
+				if(cmdBuffer != NULL){
+					cmdBuffer->u.command[1] = curCmd;
+					curCmd = cmdBuffer;
+					printf("the second is %d\n",curCmd->u.command[1]->type);
+				}
+				state = SIMPLE_INIT;
+				return curCmd;
+			}
+			else if(isEqual(token,"<")){
+				state = SIMPLE_INPUT;
+			}
+			else if(isEqual(token, ">")){
+				state = SIMPLE_OUTPUT;
+			}
+			else if(isNormalToken(token)){
+				//printf("hi\n");
+				state = SIMPLE_NO;
+				if(curCmdWordIndex >= curCmdWordMax){
+					curCmd->u.word = checked_grow_alloc(curCmd->u.word,&curCmdWordMax);
+				}
+				curCmd->u.word[curCmdWordIndex] = token;
+				curCmdWordIndex++;
+			}
+			else if(isCombineToken(token)){
+				//printf("in\n");
+				if(cmdBuffer != NULL){
+					//printf("not null\n");
+					cmdBuffer->u.command[1] = curCmd;
+					curCmd = cmdBuffer;
+				}
+				//printf("push\n");
+				//printf("current command %s\n",curCmd->u.word[0]);
+				cmdBuffer = push_command_buffer(curCmd, token);
+				//printf("after\n");
+				curCmd = checked_malloc(sizeof(struct command));
+				curCmd->type = SIMPLE_COMMAND;
+				//printf("cmd Buffer %s\n",cmdBuffer->u.command[0]->u.word[0]);
+				state = SIMPLE_INIT;
+			}
+			else{
+				error(1,0,"error @ line %d\n",s->curLineNum);
+			}
+			break;
+		case SIMPLE_INPUT:
+			//printf("input\n");
+			if(isNormalToken(token)){
+				curCmd->input = token;
+				state = SIMPLE_INPUT_FINISH;	
+			}
+			else{
+				error(1,0,"error @ line %d\n",s->curLineNum);
+			}
+			break;
+		case SIMPLE_OUTPUT:
+			//printf("output\n");
+			if(isNormalToken(token)){
+				curCmd->output = token;
+				state = SIMPLE_OUTPUT_FINISH;
+			}
+			else{
+				error(1,0,"error @ line %d\n",s->curLineNum);
+			}
+			break;
+		case SIMPLE_INPUT_FINISH:
+			//printf("input finish\n");
+			if(isEqual(token,">")){
+				state = SIMPLE_OUTPUT;
+			}
+			else if(isEqual(token,"\n")){
+				if(cmdBuffer != NULL){
+					cmdBuffer->u.command[1] = curCmd;
+					curCmd = cmdBuffer;
+					printf("the second is %d\n",curCmd->u.command[1]->type);
+				}
+				return curCmd;
+				state = SIMPLE_INIT;
+			}
+			else if(isCombineToken(token)){
+				if(cmdBuffer != NULL){
+					cmdBuffer->u.command[1] = curCmd;
+					curCmd = cmdBuffer;
+				}
+				cmdBuffer = push_command_buffer(curCmd, token);			
+				curCmd = checked_malloc(sizeof(struct command));
+				curCmd->type = SIMPLE_COMMAND;
+				state = SIMPLE_INIT;
+			}
+			else{
+				error(1,0,"error @ line %d\n",s->curLineNum);
+			}
+			break;
+		case SIMPLE_OUTPUT_FINISH:
+			//printf("output finish\n");
+			if(isEqual(token,"\n")){
+				if(cmdBuffer != NULL){
+					cmdBuffer->u.command[1] = curCmd;
+					curCmd = cmdBuffer;
+					//printf("now  %d\n",curCmd->u.command[1]->type);
+				}
+				state = SIMPLE_INIT;
+				return curCmd;
+			}
+			else if(isCombineToken(token)){
+
+				
+					
+				if(cmdBuffer != NULL){
+					//printf("not null2\n");
+					cmdBuffer->u.command[1] = curCmd;
+					curCmd = cmdBuffer;
+				}
+				cmdBuffer = push_command_buffer(curCmd, token);
+				
+				
+				curCmd = checked_malloc(sizeof(struct command));
+				curCmd->type = SIMPLE_COMMAND;
+				state = SIMPLE_INIT;
+			}
+			else{
+				error(1,0,"error @ line %d\n",s->curLineNum);
+			}
+			break;
+		default:
+			error(1,0,"state transition error\n @ line %d\n",s->curLineNum);
+	}
+  }
   return 0;
 }
 
-/*
+
 command_t 
-parseCommand()
-{
-    
-}
-*/
-
-char 
-peekChar (char * ptr)
-{
-    char *tmp = ptr;
-    tmp++;
-    return *tmp;
-}
- 
-
-int 
-expectChar (char * ptr, char exp)
-{
-    ptr++;
-    if (*ptr == exp)
-        return 1;
-    else
-        return 0;
+push_command_buffer(command_t curCmd, char* token){
+	command_t cmdbuffer =  checked_malloc(sizeof(struct command));
+	cmdbuffer->type = get_command_type(token);
+	cmdbuffer->u.command[0] = curCmd;
+	return cmdbuffer;
 }
 
-/*
-int
-acceptChar (char * ptr)
-{
-    if(( *ptr >= 65 && *ptr <= 90) | (*ptr >= 97 && *ptr <= 122) | (*ptr >= 48 && *ptr <= 58) | *ptr == '!' | *ptr == '%' | *ptr == '+' | *ptr == ',' | *ptr == '-' | *ptr == '.' | *ptr == '/' | *ptr == ':')
-        return 1;
-    else
-        return 0;
-}
- */
-//command_t read_sim_command ()
-//command_t read_subshell (command_t buffer, int * lineCount, command_stream_t s, )
-//command_t read_link_command (command_t buffer, int * lineCount, command_stream_t s, )
 
+int  
+get_command_type(char* token){
+	if(isEqual(token,";")){
+		return SEQUENCE_COMMAND;
+	}
+	if(isEqual(token,"||")){
+		return OR_COMMAND;
+	}
+	if(isEqual(token,"|")){
+		return PIPE_COMMAND;
+	}
+	if(isEqual(token,"&&")){
+		return AND_COMMAND;
+	}	
+	return -1;
+}
