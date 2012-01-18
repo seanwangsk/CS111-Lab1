@@ -7,8 +7,8 @@
 #include <error.h>
 #include "alloc.h"
 #include <string.h>
-
-#define initsize 1000000//some problem
+#include <ctype.h>
+#define initsize 100//some problem
 
 enum state_type{
 	NORMAL,
@@ -39,8 +39,6 @@ make_command_stream (int (*get_next_byte) (void *),
   command_stream_t cmdStm;
   init_command_stream(&cmdStm);   
 
-  printf("token is @%d, ptr is @%d\n",cmdStm->tokens,cmdStm->ptr);
-
   enum state_type state = NORMAL;
 
   int curLineNum = 1;
@@ -63,9 +61,6 @@ make_command_stream (int (*get_next_byte) (void *),
 		}
 	}
 	else{ //not in comment status
-	    kkk++;
-		if(kkk<100)
-	//printf("buffer is %s,cGet is %c\n",buffer,cGet);
 	switch(cGet)
 		{
 			case '#': //step add_token(cmdStm,buffer);
@@ -119,15 +114,17 @@ make_command_stream (int (*get_next_byte) (void *),
 				add_token(cmdStm,tmp); //also add themselves
 				state = NORMAL;
 				break;
+			case EOF:
+				break;
 			default: //normal word
-				if(1){//isNormalChar(cGet)){
-					//if(kkk<20)
-					//printf("ptr is %d, buffer is %d\n",ptr,buffer);
+				if(isNormalChar(cGet)||cGet=='\n'||cGet=='&'
+						||cGet==';'){
 					*ptr = cGet;
 					ptr++;
 					//check if need resize the buffer
 					unsigned int offset = ptr-buffer;
 					if(offset >= bufferSize){
+						printf("buffer is %s\n",buffer);
 						char* reStream = checked_grow_alloc(buffer,&bufferSize);
 						buffer = reStream;
 						//printf("s is %d, offset is %d\n",s,offset);
@@ -136,6 +133,7 @@ make_command_stream (int (*get_next_byte) (void *),
 					state = NORMAL;
 				}
 				else{
+					printf("cGet is ~~%c~~\n",cGet);
 					error(1,0,"parse error @ %d\n",curLineNum);
 				}
 		}
@@ -163,7 +161,7 @@ init_command_stream(command_stream_t* s){
 	(*s)->tokens = checked_malloc(initsize*sizeof(char*));
 	(*s)->size = 0;
 	(*s)->ptr = (*s)->tokens;
-	(*s)->maxsize = initsize;
+	(*s)->maxsize = initsize*sizeof(char*);
 }
 
 void 
@@ -174,16 +172,24 @@ change_last_token(command_stream_t s, char* token){
 void 
 add_token(command_stream_t s, char* token){
 	if(strlen(token)>0){
+		printf("token is %s\n",token);
 		*(s->ptr) = token;
 		s->ptr++;
 		unsigned int offset = s->ptr-s->tokens;
-		if(offset >= s->maxsize){
+		if(offset >= (s->maxsize)/sizeof(char*)){
+			
 			char** reStream = checked_grow_alloc(s->tokens,&(s->maxsize));
 			s->tokens = reStream;
 			//printf("s is %d, offset is %d\n",s,offset);
 			s->ptr = s->tokens + offset;
 		}
 		s->size++;
+		int i =0;
+		printf("stream is\n");
+		for(i=0;i<s->size;i++){
+			printf("%s\ ",s->tokens[i]);
+		}
+			printf("\n");
 	}
 }
 /*
@@ -196,21 +202,6 @@ command_t init_simple_command(command_t cmd){
 */
 
 
-
-
-
-void string_add(char** string, size_t maxsize, char** ptr, char cGet){
-	**ptr = cGet;
-		*ptr++;
-		//check if need resize the buffer
-		unsigned int offset = *ptr-*string;
-		if(offset >= maxsize){
-			char* reStream = checked_grow_alloc(*string,&maxsize);
-			*string = reStream;
-			//printf("s is %d, offset is %d\n",s,offset);
-			*ptr = *string + offset;
-		}
-}
 
 
 command_t
