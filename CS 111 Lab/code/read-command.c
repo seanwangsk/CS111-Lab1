@@ -8,7 +8,7 @@
 #include "alloc.h"
 #include <string.h>
 #include <ctype.h>
-#define initsize 100//some problem
+#define initsize 1000//some problem
 
 enum state_type{
 	NORMAL,
@@ -69,7 +69,7 @@ make_command_stream (int (*get_next_byte) (void *),
 				state = IN_COMMENT;
 				break;
 			case '&':
-				if(state = WAIT_FOR_AND){ //&&
+				if(state == WAIT_FOR_AND){ //&&
 					change_last_token(cmdStm,"&&");
 					state = NORMAL;
 				}
@@ -82,7 +82,7 @@ make_command_stream (int (*get_next_byte) (void *),
 				}
 				break;
 			case '|':
-				if(state = WAIT_FOR_OR){ //&&
+				if(state == WAIT_FOR_OR){ //&&
 					change_last_token(cmdStm,"||");
 					state = NORMAL;
 				}
@@ -90,7 +90,7 @@ make_command_stream (int (*get_next_byte) (void *),
 					add_token(cmdStm,buffer);
 					init_buffer(&buffer,&ptr);
 					char* tmp = checked_malloc(2);
-					add_token(cmdStm,"&");
+					add_token(cmdStm,"|");
 					state = WAIT_FOR_OR;
 				}
 				break;
@@ -172,7 +172,7 @@ change_last_token(command_stream_t s, char* token){
 void 
 add_token(command_stream_t s, char* token){
 	if(strlen(token)>0){
-		printf("token is %s\n",token);
+		//printf("token is %s\n",token);
 		*(s->ptr) = token;
 		s->ptr++;
 		unsigned int offset = s->ptr-s->tokens;
@@ -184,12 +184,12 @@ add_token(command_stream_t s, char* token){
 			s->ptr = s->tokens + offset;
 		}
 		s->size++;
-		int i =0;
-		printf("stream is\n");
-		for(i=0;i<s->size;i++){
-			printf("%s\ ",s->tokens[i]);
-		}
-			printf("\n");
+		//int i =0;
+		//printf("stream is\n");
+		//for(i=0;i<s->size;i++){
+		//	printf("%s\ ",s->tokens[i]);
+		//}
+		//	printf("\n");
 	}
 }
 /*
