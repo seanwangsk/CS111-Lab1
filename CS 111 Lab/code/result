@@ -1,1877 +1,270 @@
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is true
-token is 
+length is 5
+tmp is 
 
 token is 
 
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 1
-with , result is 1
-with - result is 1
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 1
-with , result is 1
-with - result is 1
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
+length is 0
+tmp is 
+
+token is 
+
 token is g++
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 1
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is -c
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 0
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is foo.c
-token is 
+length is 5
+tmp is 
 
 token is 
 
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 0
-with . result is 0
-with / result is 0
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
+length is 5
+tmp is 
+
+token is 
+
 token is :
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 0
-with . result is 0
-with / result is 0
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
+length is 5
 token is :
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 0
-with . result is 0
-with / result is 0
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
+length is 5
 token is :
-token is 
+length is 5
+tmp is 
 
 token is 
 
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
+tmp is 
+
+token is 
+
 token is cat
+length is 5
+length is 5
+tmp is <
 token is <
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 0
-with . result is 0
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 0
-with . result is 0
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is /etc/passwd
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
+buffer is 
+length is 5
+token is |
+length is 5
 token is tr
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 1
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is a-z
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 1
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is A-Z
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
+buffer is 
+length is 5
+token is |
+length is 5
 token is sort
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 1
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is -u
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
+buffer is 
+length is 5
+token is |
+length is 5
 token is echo
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is sort
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 0
-with ! result is 1
-with % result is 1
-with + result is 1
-with , result is 1
-with - result is 1
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
+length is 5
 token is failed!
-token is 
+length is 5
+tmp is 
 
 token is 
 
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
+tmp is 
+
+token is 
+
 token is a
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is b
+length is 5
+tmp is <
 token is <
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
 token is c
+length is 5
+length is 5
+tmp is >
 token is >
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is d
-token is 
+length is 5
+tmp is 
 
 token is 
 
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
+tmp is 
+
+token is 
+
 token is cat
+length is 5
+length is 5
+tmp is <
 token is <
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 0
-with . result is 0
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 0
-with . result is 0
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is /etc/passwd
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
+buffer is 
+length is 5
+token is |
+length is 5
 token is tr
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 1
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is a-z
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 1
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is A-Z
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
+buffer is 
+length is 5
+token is |
+length is 5
 token is sort
-isNormal result is 0
-with ! result is 0
-with % result is 0
-with + result is 0
-with , result is 0
-with - result is 1
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is -u
+length is 5
+length is 5
+tmp is >
 token is >
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is out
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
+buffer is 
+length is 5
+token is |
+length is 0
 token is echo
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
 token is sort
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 0
-with ! result is 1
-with % result is 1
-with + result is 1
-with , result is 1
-with - result is 1
-with . result is 1
-with / result is 1
-with : result is 1
-with @ result is 1
-with ^ result is 1
-with _ result is 1
-with   result is 1
-with 	 result is 1
+length is 5
 token is failed!
-token is 
+length is 5
+tmp is 
 
 token is 
 
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-token is ab
-token is 
-
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-token is c
-token is 
-
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-token is d
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-token is e
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-token is f
-token is 
+length is 5
+tmp is 
 
 token is 
 
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-token is g
-token is <
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-token is h
-token is 
-
-token is 
-
-token is 
-
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+buffer is a
 token is a
-token is <
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
+token is &
+buffer is b
 token is b
-token is >
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-token is cd
-token is <
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+length is 5
+token is |
+length is 5
+tmp is 
+
+token is 
+
+length is 5
+token is c
+length is 5
+buffer is 
+length is 5
+token is &
+length is 5
+tmp is 
+
+token is 
+
+length is 5
+length is 5
+token is d
+length is 5
+buffer is 
+length is 5
+token is |
+length is 5
 token is e
-token is >
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
-token is fg
+length is 5
+buffer is 
+length is 5
+token is &
+length is 5
+buffer is f
+token is f
+length is 5
+token is |
+length is 5
+tmp is 
+
+token is 
+
+length is 5
+tmp is 
+
+token is 
+
+token is g
+length is 5
+tmp is <
 token is <
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
 token is h
+length is 5
+tmp is 
+
+token is 
+
+length is 5
+tmp is 
+
+token is 
+
+length is 5
+token is 
+
+token is a
+length is 5
+tmp is <
+token is <
+token is b
+length is 0
+tmp is >
 token is >
-isNormal result is 8
-with ! result is 8
-with % result is 8
-with + result is 8
-with , result is 8
-with - result is 8
-with . result is 8
-with / result is 8
-with : result is 8
-with @ result is 8
-with ^ result is 8
-with _ result is 8
-with   result is 8
-with 	 result is 8
+buffer is c
+token is c
+length is 5
+token is |
+token is d
+length is 5
+tmp is <
+token is <
+token is e
+length is 5
+tmp is >
+token is >
+buffer is f
+token is f
+length is 5
+token is |
+token is g
+length is 5
+tmp is <
+token is <
+token is h
+length is 5
+tmp is >
+token is >
 token is i
+length is 5
+tmp is 
+
 token is 
 
 true 
@@ -1880,17 +273,18 @@ true
  
  : : : 
  
- cat < || tr a-z || sort || echo sort failed! 
+ cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
  
  a b < c > d 
  
- cat < || tr a-z || sort -u > || echo sort failed! 
- || ab 
- && 
- || || f 
+ cat < /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f | 
  
  g < h 
  
  
- a < b || cd < e || fg < h > i 
+ a < b > c | d < e > f | g < h > i 
  
