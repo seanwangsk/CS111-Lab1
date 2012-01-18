@@ -1,5 +1,5 @@
 // UCLA CS 111 Lab 1 command internals
-
+#include <stdlib.h>
 enum command_type
   {
     AND_COMMAND,         // A && B
@@ -38,6 +38,8 @@ struct command
 
 struct command_stream
 {
-	command* stream;
-	int length; //total # of commands
+	char** tokens;
+	int size; //total # of tokens
+	size_t maxsize;
+	char** ptr;
 };
