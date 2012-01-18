@@ -1,0 +1,1036 @@
+1before token is true
+token is true
+stream is
+true ========
+2before token is 
+
+token is 
+
+stream is
+true 
+ ========
+1before token is 
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ ========
+token is g++
+stream is
+true 
+ 
+ g++ ========
+token is -c
+stream is
+true 
+ 
+ g++ -c ========
+1before token is foo.c
+token is foo.c
+stream is
+true 
+ 
+ g++ -c foo.c ========
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ ========
+1before token is 
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ ========
+token is :
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : ========
+token is :
+resize happens
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : ========
+1before token is :
+token is :
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : ========
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ ========
+1before token is 
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ ========
+token is cat
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat ========
+1before token is 
+2before token is <
+token is <
+stream is
+true < < g++ -c foo.c < < : : : < < cat < ========
+token is /etc/passwd
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd ========
+token is |
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | ========
+token is tr
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr ========
+token is a-z
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z ========
+token is A-Z
+resize happens
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z ========
+token is |
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | ========
+token is sort
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort ========
+token is -u
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u ========
+token is |
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u | ========
+token is echo
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo ========
+token is sort
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort ========
+1before token is failed!
+token is failed!
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! ========
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ ========
+1before token is 
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ ========
+token is a
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a ========
+1before token is b
+token is b
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b ========
+2before token is <
+token is <
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < ========
+token is c
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c ========
+1before token is 
+2before token is >
+token is >
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > ========
+1before token is d
+token is d
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d ========
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ ========
+1before token is 
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ ========
+token is cat
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat ========
+1before token is 
+2before token is <
+token is <
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < ========
+token is /etc/passwd
+resize happens
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd ========
+token is |
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | ========
+token is tr
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr ========
+token is a-z
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z ========
+token is A-Z
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z ========
+token is |
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z | ========
+token is sort
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z | sort ========
+token is -u
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z | sort -u ========
+1before token is 
+2before token is >
+token is >
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > ========
+token is out
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out ========
+token is |
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out | ========
+token is echo
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo ========
+token is sort
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort ========
+1before token is failed!
+token is failed!
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! ========
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ ========
+1before token is 
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ ========
+token is a
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a ========
+token is &
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a & ========
+token is b
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b ========
+token is |
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b | ========
+1before token is 
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ ========
+token is c
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c ========
+token is &
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c & ========
+1before token is 
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ ========
+token is d
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d ========
+token is |
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | ========
+token is e
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e ========
+token is &
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e & ========
+token is f
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f ========
+token is |
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f | ========
+1before token is 
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f | 
+ ========
+1before token is 
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f | 
+ 
+ ========
+1before token is g
+token is g
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f | 
+ 
+ g ========
+2before token is <
+token is <
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z | sort -u < out || echo sort failed! < < a && b || < c && < d | e && f | < < g < ========
+1before token is h
+token is h
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z | sort -u < out || echo sort failed! < < a && b || < c && < d | e && f | < < g < h ========
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f | 
+ 
+ g 
+ h 
+ ========
+1before token is 
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f | 
+ 
+ g 
+ h 
+ 
+ ========
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f | 
+ 
+ g 
+ h 
+ 
+ 
+ ========
+1before token is a
+token is a
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f | 
+ 
+ g 
+ h 
+ 
+ 
+ a ========
+2before token is <
+token is <
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z | sort -u < out || echo sort failed! < < a && b || < c && < d | e && f | < < g < h < < 
+ a < ========
+1before token is b
+token is b
+resize happens
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z | sort -u < out || echo sort failed! < < a && b || < c && < d | e && f | < < g < h < < 
+ a < b ========
+2before token is >
+token is >
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! > > a && b || > c && > d | e && f | > > g > h > > 
+ a > b > ========
+token is c
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! > > a && b || > c && > d | e && f | > > g > h > > 
+ a > b > c ========
+token is |
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! > > a && b || > c && > d | e && f | > > g > h > > 
+ a > b > c | ========
+1before token is d
+token is d
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! > > a && b || > c && > d | e && f | > > g > h > > 
+ a > b > c | d ========
+2before token is <
+token is <
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z | sort -u < out || echo sort failed! < < a && b || < c && < d | e && f | < < g < h < < 
+ a < b < c | d < ========
+1before token is e
+token is e
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z | sort -u < out || echo sort failed! < < a && b || < c && < d | e && f | < < g < h < < 
+ a < b < c | d < e ========
+2before token is >
+token is >
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! > > a && b || > c && > d | e && f | > > g > h > > 
+ a > b > c | d > e > ========
+token is f
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! > > a && b || > c && > d | e && f | > > g > h > > 
+ a > b > c | d > e > f ========
+token is |
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! > > a && b || > c && > d | e && f | > > g > h > > 
+ a > b > c | d > e > f | ========
+1before token is g
+token is g
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! > > a && b || > c && > d | e && f | > > g > h > > 
+ a > b > c | d > e > f | g ========
+2before token is <
+token is <
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z | sort -u < out || echo sort failed! < < a && b || < c && < d | e && f | < < g < h < < 
+ a < b < c | d < e < f | g < ========
+1before token is h
+token is h
+stream is
+true < < g++ -c foo.c < < : : : < < cat < /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! < < a b < c < d < < cat < /etc/passwd | tr a-z A-Z | sort -u < out || echo sort failed! < < a && b || < c && < d | e && f | < < g < h < < 
+ a < b < c | d < e < f | g < h ========
+2before token is >
+token is >
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! > > a && b || > c && > d | e && f | > > g > h > > 
+ a > b > c | d > e > f | g > h > ========
+1before token is i
+token is i
+stream is
+true > > g++ -c foo.c > > : : : > > cat > /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! > > a b > c > d > > cat > /etc/passwd | tr a-z A-Z | sort -u > out || echo sort failed! > > a && b || > c && > d | e && f | > > g > h > > 
+ a > b > c | d > e > f | g > h > i ========
+2before token is 
+
+token is 
+
+stream is
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f | 
+ 
+ g 
+ h 
+ 
+ 
+ a 
+ b 
+ c | d 
+ e 
+ f | g 
+ h 
+ i 
+ ========
+true 
+ 
+ g++ -c foo.c 
+ 
+ : : : 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u || echo sort failed! 
+ 
+ a b 
+ c 
+ d 
+ 
+ cat 
+ /etc/passwd | tr a-z A-Z | sort -u 
+ out || echo sort failed! 
+ 
+ a && b || 
+ c && 
+ d | e && f | 
+ 
+ g 
+ h 
+ 
+ 
+ a 
+ b 
+ c | d 
+ e 
+ f | g 
+ h 
+ i 
+ 
