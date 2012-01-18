@@ -53,6 +53,9 @@ make_command_stream (int (*get_next_byte) (void *),
 			curLineNum++;
 		}
 	}
+	else if(state == WAIT_FOR_AND && cGet != '&'){
+		error(1,0,"parse error @ line %d\n",curLineNum);	
+	}
 	else{ //not in comment status
 	switch(cGet)
 		{
@@ -63,13 +66,12 @@ make_command_stream (int (*get_next_byte) (void *),
 				break;
 			case '&':
 				if(state == WAIT_FOR_AND){ //&&
-					change_last_token(cmdStm,"&&");
+					add_token(cmdStm,"&&");
 					state = NORMAL;
 				}
 				else{
 					add_token(cmdStm,buffer);
 					init_buffer(&buffer,&ptr);
-					add_token(cmdStm,"&");
 					state = WAIT_FOR_AND;
 				}
 				break;
@@ -123,7 +125,7 @@ make_command_stream (int (*get_next_byte) (void *),
 					state = NORMAL;
 				}
 				else{
-					error(1,0,"parse error @ %d\n",curLineNum);
+					error(1,0,"parse error @ line %d\n",curLineNum);
 				}
 		}
 	}
