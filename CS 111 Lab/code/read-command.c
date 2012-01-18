@@ -17,18 +17,13 @@ enum state_type{
 	WAIT_FOR_OR
 };
 
-int 
-isNormalChar(char c){
-	        char* dict = "!%+,-./:@^_ \t";
-	        int isNormal = isalnum(c);
-		int i;
-		for(i=0;i<strlen(dict);i++){
-	                isNormal = isNormal | (c==dict[i]);
-	        }
-	        return isNormal;
-}
+int isNormalChar(char);
+void init_buffer(char**, char**);
+void init_command_stream(command_stream_t*);
+void change_last_token(command_stream_t, char*);
+void add_token(command_stream_t, char*);
 
-//question about \"
+//convert the input file char stream into token stream, ignore the comments
 command_stream_t
 make_command_stream (int (*get_next_byte) (void *),
 		     void *get_next_byte_argument)
@@ -72,7 +67,6 @@ make_command_stream (int (*get_next_byte) (void *),
 					state = NORMAL;
 				}
 				else{
-					printf("buffer is %s\n",buffer);
 					add_token(cmdStm,buffer);
 					init_buffer(&buffer,&ptr);
 					add_token(cmdStm,"&");
@@ -85,7 +79,6 @@ make_command_stream (int (*get_next_byte) (void *),
 					state = NORMAL;
 				}
 				else{
-					printf("buffer is %s\n",buffer);
 					add_token(cmdStm,buffer);
 					init_buffer(&buffer,&ptr);
 					add_token(cmdStm,"|");
@@ -110,7 +103,6 @@ make_command_stream (int (*get_next_byte) (void *),
 				char* tmp = checked_malloc(2*sizeof(char));
 				tmp[0] = cGet;
 				tmp[1] = '\0';
-				printf("tmp is %s\n",tmp);
 				add_token(cmdStm,tmp); //also add themselves
 				state = NORMAL;
 				break;
@@ -146,10 +138,20 @@ make_command_stream (int (*get_next_byte) (void *),
   return cmdStm;
 }
 
+int 
+isNormalChar(char c){
+	        char* dict = "!%+,-./:@^_ \t";
+	        int isNormal = isalnum(c);
+		unsigned int i;
+		for(i=0;i<strlen(dict);i++){
+	                isNormal = isNormal | (c==dict[i]);
+	        }
+	        return isNormal;
+}
+
 void 
 init_buffer(char** buffer, char**ptr){
 	*buffer = checked_malloc(initsize*sizeof(char));
-	printf("length is %d\n",strlen(buffer));
 	*ptr = *buffer;
 }
 
@@ -170,7 +172,6 @@ change_last_token(command_stream_t s, char* token){
 void 
 add_token(command_stream_t s, char* token){
 	if(strlen(token)>0){
-		printf("token is %s\n",token);
 		*(s->ptr) = token;
 		s->ptr++;
 		unsigned int offset = s->ptr-s->tokens;
@@ -182,15 +183,6 @@ add_token(command_stream_t s, char* token){
 		s->size++;
 	}
 }
-/*
-command_t init_simple_command(command_t cmd){
-	cmd = checked_alloc(sizeof(struct command));
-  	cmd.type = SIMPLE_COMMAND;
-	cmd.word =  
-  	char*  = checked_malloc(stmSz);
-}
-*/
-
 
 
 
@@ -198,6 +190,5 @@ command_t
 read_command_stream (command_stream_t s)
 {
   /* FIXME: Replace this with your implementation too.  */
-  error (1, 0, "command reading not yet implemented");
   return 0;
 }
