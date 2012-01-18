@@ -217,6 +217,82 @@ command_t
 read_command_stream (command_stream_t s)
 {
   /* FIXME: Replace this with your implementation too.  */
+    int *lineCount = 0;
+    int tokenIndex = 0;
+    char **tokenPtr = s->tokens;
+    
+    command_t buffer = checked_malloc(sizeof(struct command));
+    
+    while (tokenIndex < s->size)
+    {
+        printf("test\n");
+            
+        int charIndex = 0;
+        while (charIndex < strlen(tokenPtr[tokenIndex]))
+        {
+            printf("%c\n",tokenPtr[tokenIndex][charIndex]);
+            
+            if (tokenPtr[tokenIndex][charIndex] == '\n') //calculate the line number
+                *lineCount++;
+            
+            else if (tokenPtr[tokenIndex][charIndex] == '&') //&& AND Commands
+          //          if (peek(tokenPtr[tokenIndex][charIndex])== '&')
+                    
+                            
+                    
+            
+            
+            
+            charIndex++;
+        }
+        
+        tokenIndex++;
+    }
+
+    
+    
   error (1, 0, "command reading not yet implemented");
   return 0;
 }
+
+/*
+command_t 
+parseCommand()
+{
+    
+}
+*/
+
+char 
+peekChar (char * ptr)
+{
+    char *tmp = ptr;
+    tmp++;
+    return *tmp;
+}
+ 
+
+int 
+expectChar (char * ptr, char exp)
+{
+    ptr++;
+    if (*ptr == exp)
+        return 1;
+    else
+        return 0;
+}
+
+/*
+int
+acceptChar (char * ptr)
+{
+    if(( *ptr >= 65 && *ptr <= 90) | (*ptr >= 97 && *ptr <= 122) | (*ptr >= 48 && *ptr <= 58) | *ptr == '!' | *ptr == '%' | *ptr == '+' | *ptr == ',' | *ptr == '-' | *ptr == '.' | *ptr == '/' | *ptr == ':')
+        return 1;
+    else
+        return 0;
+}
+ */
+//command_t read_sim_command ()
+//command_t read_subshell (command_t buffer, int * lineCount, command_stream_t s, )
+//command_t read_link_command (command_t buffer, int * lineCount, command_stream_t s, )
+
