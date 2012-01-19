@@ -10,6 +10,8 @@
 #include <ctype.h>
 #define initsize 100//some problem
 
+//#define Debug 0 //for Debug printf
+
 enum token_state{
 	NORMAL,
 	IN_COMMENT,
@@ -23,8 +25,8 @@ void init_command_stream(command_stream_t*);
 void change_last_token(command_stream_t, char*);
 void add_token(command_stream_t, char*);
 
-void parseSubshell(char**, int* , int*, int , command_t);
-void parseCommand(char**, int* , int*, int , command_t);
+//command_t parseSubshell(command_stream_t);
+//command_t parse_Command(command_stream_t, int);
 
 
 //convert the input file char stream into token stream, ignore the comments
@@ -134,9 +136,11 @@ make_command_stream (int (*get_next_byte) (void *),
   cmdStm->ptr = cmdStm->tokens; //init the ptr
   cmdStm->curLineNum = 1;
   int i;
+#ifdef Debug
   for(i=0;i<cmdStm->size;i++){
   	printf("%s ",cmdStm->tokens[i]);//not work
   }
+#endif
   return cmdStm;
 }
 
@@ -226,180 +230,247 @@ isCombineToken(char* token)
 }
 command_t push_command_buffer(command_t, char*);
 
-command_t
-read_command_stream (command_stream_t s)
-{   
-  command_t curCmd = checked_malloc(sizeof(struct command));
-  curCmd->type = SIMPLE_COMMAND;
-  command_t cmdBuffer = NULL;
-  
-  
-  unsigned int curCmdWordIndex;
-  size_t curCmdWordMax;
-    
-  
-  enum command_state state = SIMPLE_INIT;   
-  int i;
+command_t parse_Command(command_stream_t, int);
 
-  int curOffset = (s->ptr - s->tokens);
-  
-  for(i=curOffset; i < s->size;i++){
-	s->ptr++;
-
-  	char* token = s->tokens[i];
-	//printf("#%d token is %s\n",s->curLineNum,token);
-	if(isEqual(token,"\n")){
-		s->curLineNum++;
-	}
-	switch(state){
-		case SIMPLE_INIT:
-			//printf("simple_init\n");
-			if(isEqual(token, "\n")){
-				state = SIMPLE_INIT;	
-			}
-			else if(isNormalToken(token)){
-				curCmd->u.word = checked_malloc(initsize*sizeof(char*));
-				curCmdWordMax = initsize * sizeof(char*);
-				curCmd->u.word[0] = token;
-				curCmdWordIndex = 1; 
-				state = SIMPLE_NO;
-			}
-			else{
-				error(1,0,"error @ line %d\n",s->curLineNum);
-			} 
-			break;
-		case SIMPLE_NO:
-			//printf("no\n");
-			//printf("==%s==\n",token);
-			if(isEqual(token,"\n")){
-				if(cmdBuffer != NULL){
-					cmdBuffer->u.command[1] = curCmd;
-					curCmd = cmdBuffer;
-					printf("the second is %d\n",curCmd->u.command[1]->type);
-				}
-				state = SIMPLE_INIT;
-				return curCmd;
-			}
-			else if(isEqual(token,"<")){
-				state = SIMPLE_INPUT;
-			}
-			else if(isEqual(token, ">")){
-				state = SIMPLE_OUTPUT;
-			}
-			else if(isNormalToken(token)){
-				//printf("hi\n");
-				state = SIMPLE_NO;
-				if(curCmdWordIndex >= curCmdWordMax){
-					curCmd->u.word = checked_grow_alloc(curCmd->u.word,&curCmdWordMax);
-				}
-				curCmd->u.word[curCmdWordIndex] = token;
-				curCmdWordIndex++;
-			}
-			else if(isCombineToken(token)){
-				//printf("in\n");
-				if(cmdBuffer != NULL){
-					//printf("not null\n");
-					cmdBuffer->u.command[1] = curCmd;
-					curCmd = cmdBuffer;
-				}
-				//printf("push\n");
-				//printf("current command %s\n",curCmd->u.word[0]);
-				cmdBuffer = push_command_buffer(curCmd, token);
-				//printf("after\n");
-				curCmd = checked_malloc(sizeof(struct command));
-				curCmd->type = SIMPLE_COMMAND;
-				//printf("cmd Buffer %s\n",cmdBuffer->u.command[0]->u.word[0]);
-				state = SIMPLE_INIT;
-			}
-			else{
-				error(1,0,"error @ line %d\n",s->curLineNum);
-			}
-			break;
-		case SIMPLE_INPUT:
-			//printf("input\n");
-			if(isNormalToken(token)){
-				curCmd->input = token;
-				state = SIMPLE_INPUT_FINISH;	
-			}
-			else{
-				error(1,0,"error @ line %d\n",s->curLineNum);
-			}
-			break;
-		case SIMPLE_OUTPUT:
-			//printf("output\n");
-			if(isNormalToken(token)){
-				curCmd->output = token;
-				state = SIMPLE_OUTPUT_FINISH;
-			}
-			else{
-				error(1,0,"error @ line %d\n",s->curLineNum);
-			}
-			break;
-		case SIMPLE_INPUT_FINISH:
-			//printf("input finish\n");
-			if(isEqual(token,">")){
-				state = SIMPLE_OUTPUT;
-			}
-			else if(isEqual(token,"\n")){
-				if(cmdBuffer != NULL){
-					cmdBuffer->u.command[1] = curCmd;
-					curCmd = cmdBuffer;
-					printf("the second is %d\n",curCmd->u.command[1]->type);
-				}
-				return curCmd;
-				state = SIMPLE_INIT;
-			}
-			else if(isCombineToken(token)){
-				if(cmdBuffer != NULL){
-					cmdBuffer->u.command[1] = curCmd;
-					curCmd = cmdBuffer;
-				}
-				cmdBuffer = push_command_buffer(curCmd, token);			
-				curCmd = checked_malloc(sizeof(struct command));
-				curCmd->type = SIMPLE_COMMAND;
-				state = SIMPLE_INIT;
-			}
-			else{
-				error(1,0,"error @ line %d\n",s->curLineNum);
-			}
-			break;
-		case SIMPLE_OUTPUT_FINISH:
-			//printf("output finish\n");
-			if(isEqual(token,"\n")){
-				if(cmdBuffer != NULL){
-					cmdBuffer->u.command[1] = curCmd;
-					curCmd = cmdBuffer;
-					//printf("now  %d\n",curCmd->u.command[1]->type);
-				}
-				state = SIMPLE_INIT;
-				return curCmd;
-			}
-			else if(isCombineToken(token)){
-
-				
-					
-				if(cmdBuffer != NULL){
-					//printf("not null2\n");
-					cmdBuffer->u.command[1] = curCmd;
-					curCmd = cmdBuffer;
-				}
-				cmdBuffer = push_command_buffer(curCmd, token);
-				
-				
-				curCmd = checked_malloc(sizeof(struct command));
-				curCmd->type = SIMPLE_COMMAND;
-				state = SIMPLE_INIT;
-			}
-			else{
-				error(1,0,"error @ line %d\n",s->curLineNum);
-			}
-			break;
-		default:
-			error(1,0,"state transition error\n @ line %d\n",s->curLineNum);
-	}
-  }
-  return 0;
+command_t 
+parse_subshell(command_stream_t s){
+    command_t subCmd = checked_malloc(sizeof(struct command));
+    subCmd->type = SUBSHELL_COMMAND;
+    subCmd->u.subshell_command = parse_Command(s, 1);
+    return subCmd;
 }
+
+command_t
+parse_Command(command_stream_t s, int isSub)
+{
+    command_t curCmd = checked_malloc(sizeof(struct command));
+    curCmd->type = SIMPLE_COMMAND;
+    command_t cmdBuffer = NULL;
+    
+    
+    unsigned int curCmdWordIndex;
+    size_t curCmdWordMax;
+    
+    
+    enum command_state state = SIMPLE_INIT;   
+    int i;
+    
+    int curOffset = (s->ptr - s->tokens);
+    
+    for(i=curOffset; i < s->size;i++){
+        s->ptr++;
+        
+        char* token = s->tokens[i];
+        
+#ifdef Debug     
+        printf("#%d token is %s\n",s->curLineNum,token);
+#endif
+        
+        if(isEqual(token,"\n")){
+            s->curLineNum++;
+        }
+        switch(state){
+            case SIMPLE_INIT:
+#ifdef Debug   
+                printf("simple_init\n");
+#endif
+                if(isEqual(token,"(")){
+                    curCmd = parse_subshell(s);
+                    if(cmdBuffer != NULL){
+                        cmdBuffer->u.command[1] = curCmd;
+                        curCmd = cmdBuffer;
+#ifdef Debug  
+                        printf("subshell is combine with another Command %d\n",curCmd->u.command[1]->type);
+#endif
+                    }
+                    state = SIMPLE_INIT;
+                    return curCmd;
+                    
+                }
+                else if(isEqual(token, "\n")){
+                    state = SIMPLE_INIT;	
+                }
+                else if(isNormalToken(token)){
+                    curCmd->u.word = checked_malloc(initsize*sizeof(char*));
+                    curCmdWordMax = initsize * sizeof(char*);
+                    curCmd->u.word[0] = token;
+                    curCmdWordIndex = 1; 
+                    state = SIMPLE_NO;
+                }
+                else{
+                    error(1,0,"error @ line %d\n",s->curLineNum);
+                } 
+                break;
+            case SIMPLE_NO:
+#ifdef Debug
+                printf("SIMPLE_NO\n");
+                printf("==%s==\n",token);
+#endif
+                //XIA: for subshell
+                if((isEqual(token,")"))&&(isSub != 0)){
+                    
+                    if(cmdBuffer != NULL){
+                        cmdBuffer->u.command[1] = curCmd;
+                        curCmd = cmdBuffer;
+#ifdef Debug
+                        printf("returning from subshell\n");
+#endif
+                    }
+                    return curCmd; //XIA: don't know whether it is correct or not
+                }
+                else if(isEqual(token,"\n")){
+                    //XIA: for subshell
+                    if(isSub != 0){
+                        //ignore \n
+                    }
+                    else
+                    {
+                        if(cmdBuffer != NULL){
+                            cmdBuffer->u.command[1] = curCmd;
+                            curCmd = cmdBuffer;
+#ifdef Debug 
+                            printf("the second is %d\n",curCmd->u.command[1]->type);
+#endif
+                        }
+                        state = SIMPLE_INIT;
+                        return curCmd;
+                    }
+                }
+                else if(isEqual(token,"<")){
+                    state = SIMPLE_INPUT;
+                }
+                else if(isEqual(token, ">")){
+                    state = SIMPLE_OUTPUT;
+                }
+                else if(isNormalToken(token)){
+#ifdef Debug                
+                    printf("normal word in SIMPLE_NO\n");
+#endif
+                    state = SIMPLE_NO;
+                    if(curCmdWordIndex >= curCmdWordMax){
+                        curCmd->u.word = checked_grow_alloc(curCmd->u.word,&curCmdWordMax);
+                    }
+                    curCmd->u.word[curCmdWordIndex] = token;
+                    curCmdWordIndex++;
+                }
+                else if(isCombineToken(token)){
+#ifdef Debug
+                    printf("combining in SIMPLE_NO\n");
+#endif
+                    if(cmdBuffer != NULL){
+                        //printf("not null\n");
+                        cmdBuffer->u.command[1] = curCmd;
+                        curCmd = cmdBuffer;
+                    }
+                    //printf("push\n");
+                    //printf("current command %s\n",curCmd->u.word[0]);
+                    cmdBuffer = push_command_buffer(curCmd, token);
+                    //printf("after\n");
+                    curCmd = checked_malloc(sizeof(struct command));
+                    curCmd->type = SIMPLE_COMMAND;
+                    //printf("cmd Buffer %s\n",cmdBuffer->u.command[0]->u.word[0]);
+                    state = SIMPLE_INIT;
+                }
+                else{
+                    error(1,0,"error @ line %d\n",s->curLineNum);
+                }
+                break;
+            case SIMPLE_INPUT:
+#ifdef Debug            
+                printf("input\n");
+#endif
+                if(isNormalToken(token)){
+                    curCmd->input = token;
+                    state = SIMPLE_INPUT_FINISH;	
+                }
+                else{
+                    error(1,0,"error @ line %d\n",s->curLineNum);
+                }
+                break;
+            case SIMPLE_OUTPUT:
+#ifdef Debug            
+                printf("output\n");
+#endif
+                if(isNormalToken(token)){
+                    curCmd->output = token;
+                    state = SIMPLE_OUTPUT_FINISH;
+                }
+                else{
+                    error(1,0,"error @ line %d\n",s->curLineNum);
+                }
+                break;
+            case SIMPLE_INPUT_FINISH:
+#ifdef Debug
+                printf("input finish\n");
+#endif
+                if(isEqual(token,">")){
+                    state = SIMPLE_OUTPUT;
+                }
+                else if(isEqual(token,"\n")){
+                    if(cmdBuffer != NULL){
+                        cmdBuffer->u.command[1] = curCmd;
+                        curCmd = cmdBuffer;
+#ifdef Debug
+                        printf("the second is %d\n",curCmd->u.command[1]->type);
+#endif
+                    }
+                    return curCmd;
+                    state = SIMPLE_INIT;
+                }
+                else if(isCombineToken(token)){
+                    if(cmdBuffer != NULL){
+                        cmdBuffer->u.command[1] = curCmd;
+                        curCmd = cmdBuffer;
+                    }
+                    cmdBuffer = push_command_buffer(curCmd, token);			
+                    curCmd = checked_malloc(sizeof(struct command));
+                    curCmd->type = SIMPLE_COMMAND;
+                    state = SIMPLE_INIT;
+                }
+                else{
+                    error(1,0,"error @ line %d\n",s->curLineNum);
+                }
+                break;
+            case SIMPLE_OUTPUT_FINISH:
+#ifdef Debug
+                printf("output finish\n");
+#endif
+                if(isEqual(token,"\n")){
+                    if(cmdBuffer != NULL){
+                        cmdBuffer->u.command[1] = curCmd;
+                        curCmd = cmdBuffer;
+                        //printf("now  %d\n",curCmd->u.command[1]->type);
+                    }
+                    state = SIMPLE_INIT;
+                    return curCmd;
+                }
+                else if(isCombineToken(token)){
+                    
+                    
+                    
+                    if(cmdBuffer != NULL){
+                        //printf("not null2\n");
+                        cmdBuffer->u.command[1] = curCmd;
+                        curCmd = cmdBuffer;
+                    }
+                    cmdBuffer = push_command_buffer(curCmd, token);
+                    
+                    
+                    curCmd = checked_malloc(sizeof(struct command));
+                    curCmd->type = SIMPLE_COMMAND;
+                    state = SIMPLE_INIT;
+                }
+                else{
+                    error(1,0,"error @ line %d\n",s->curLineNum);
+                }
+                break;
+            default:
+                error(1,0,"state transition error\n @ line %d\n",s->curLineNum);
+        }
+    }
+    return 0;
+}
+
 
 
 command_t 
@@ -409,7 +480,6 @@ push_command_buffer(command_t curCmd, char* token){
 	cmdbuffer->u.command[0] = curCmd;
 	return cmdbuffer;
 }
-
 
 int  
 get_command_type(char* token){
@@ -426,4 +496,10 @@ get_command_type(char* token){
 		return AND_COMMAND;
 	}	
 	return -1;
+}
+
+command_t
+read_command_stream (command_stream_t s)
+{ 
+    return parse_Command(s, 0);
 }
