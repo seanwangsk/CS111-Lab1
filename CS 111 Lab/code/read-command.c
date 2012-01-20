@@ -309,6 +309,7 @@ parse_Command(command_stream_t s, int isSub)
 #ifdef Debug  
                     printf("Offset Reset to %d\ni  reset to: %d\n",curOffset,i);
 #endif
+                    
                     if(i == s->size) // if ")" is the last token of the script  then return curCmd directly;
                     {
                         if(cmdBuffer != NULL){
@@ -318,13 +319,13 @@ parse_Command(command_stream_t s, int isSub)
                         return curCmd;
                     }
 
-                    curCmd = complete_command(curCmd,cmdBuffer);
+                    //curCmd = complete_command(curCmd,cmdBuffer);
                     
                     state = SUBSHELL_FINISH;
                 }
                 else if(isEqual(token,")")&&(haveCmd!=0))//inside subshell and already have command in it
                 {
-                    //curCmd = complete_command(curCmd,cmdBuffer);
+                    curCmd = complete_command(curCmd,cmdBuffer);
 #ifdef Debug
                     printf("returning from subshell from SIMPLE_INIT\n");
 #endif
@@ -500,7 +501,7 @@ parse_Command(command_stream_t s, int isSub)
                     }
                     else // inside subshell;
                     {
-                        curCmd = complete_command(curCmd,cmdBuffer);
+                        //curCmd = complete_command(curCmd,cmdBuffer);
                         state = SIMPLE_INIT;
                         haveCmd = 1;
                     }
@@ -558,7 +559,7 @@ parse_Command(command_stream_t s, int isSub)
 #ifdef Debug
                     printf("combining for subshell\n");
 #endif
-                    curCmd = complete_command(curCmd,cmdBuffer);
+                    //curCmd = complete_command(curCmd,cmdBuffer);
                     cmdBuffer = push_command_buffer(curCmd, token);
                     curCmd = init_command();
                     state = SIMPLE_INIT;
