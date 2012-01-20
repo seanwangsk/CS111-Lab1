@@ -298,6 +298,7 @@ parse_Command(command_stream_t s, int isSub)
                 if(isEqual(token,"(")){//XIA: for subshell
                     curCmd = parse_subshell(s);
 #ifdef Debug  
+                    print_command(curCmd);
                     printf("Offset Before reset: %d\ni before reset: %d\n",curOffset,i);
 #endif
                     
@@ -533,7 +534,8 @@ parse_Command(command_stream_t s, int isSub)
                 }
                 else if(isEqual(token,"\n")){
 #ifdef Debug
-                    printf("fucking type %d\n",curCmd->type);
+                    printf("inside subshell finish\n");
+                    print_command(curCmd);                    
 #endif
                     //XIA: for subshell // if inside subShell then take it as a sequence command
                     if(isSub != 0){
@@ -541,7 +543,7 @@ parse_Command(command_stream_t s, int isSub)
                     }
                     else//if not insdie subShell then return
                     {
-                        curCmd = complete_command(curCmd,cmdBuffer);
+                       // curCmd = complete_command(curCmd,cmdBuffer);
                         state = SIMPLE_INIT;
                         return curCmd;
                     }
