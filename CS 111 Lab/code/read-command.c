@@ -10,7 +10,7 @@
 #include <ctype.h>
 #define initsize 100//some problem
 
-#define Debug 0 //for Debug printf
+//#define Debug 0 //for Debug printf
 
 enum token_state{
 	NORMAL,
