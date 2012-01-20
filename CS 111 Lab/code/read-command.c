@@ -543,7 +543,7 @@ parse_Command(command_stream_t s, int isSub)
                     }
                     else//if not insdie subShell then return
                     {
-                       // curCmd = complete_command(curCmd,cmdBuffer);
+                        curCmd = complete_command(curCmd,cmdBuffer);
                         state = SIMPLE_INIT;
                         return curCmd;
                     }
