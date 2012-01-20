@@ -59,6 +59,9 @@ make_command_stream (int (*get_next_byte) (void *),
 			curLineNum++;
 		}
 	}
+	else if(state==WAIT_FOR_AND&&cGet!="&"){
+		error(1,0,"error @ line %d\n",curLineNum);
+	}
 	else{ //not in comment status
 	switch(cGet)
 		{
@@ -69,13 +72,12 @@ make_command_stream (int (*get_next_byte) (void *),
 				break;
 			case '&':
 				if(state == WAIT_FOR_AND){ //&&
-					change_last_token(cmdStm,"&&");
+					add_token(cmdStm,buffer);
+					init_buffer(&buffer,&ptr);
+					add_token(cmdStm,"&&");
 					state = NORMAL;
 				}
 				else{
-					add_token(cmdStm,buffer);
-					init_buffer(&buffer,&ptr);
-					add_token(cmdStm,"&");
 					state = WAIT_FOR_AND;
 				}
 				break;
@@ -138,7 +140,7 @@ make_command_stream (int (*get_next_byte) (void *),
   int i;
 //#ifdef Debug
   for(i=0;i<cmdStm->size;i++){
-  	printf("%s ",cmdStm->tokens[i]);//not work
+//  	printf("%s ",cmdStm->tokens[i]);//not work
   }
 //#endif
   return cmdStm;
@@ -586,30 +588,36 @@ parse_Command(command_stream_t s, int isSub)
     }
     
     s->curLineNum--; // because function getc will return an additional \n
-    if(state == SIMPLE_INPUT_FINISH ||
-	state == SIMPLE_OUTPUT_FINISH ||
-	state == SIMPLE_NO  ||
-	state == SUBSHELL_FINISH
-	)
+    if(isSub==0)
     {
-    	curCmd = complete_command(curCmd,cmdBuffer);
-	return curCmd;
-    }
-    else if(state == SIMPLE_INIT){
-    	if(cmdBuffer!=NULL){ //combine situation
-		if(cmdBuffer->type == SEQUENCE_COMMAND){	//single command;
-			curCmd = cmdBuffer->u.command[0];
-			free(cmdBuffer);
-			return curCmd;
+	    if((state == SIMPLE_INPUT_FINISH ||
+		state == SIMPLE_OUTPUT_FINISH ||
+		state == SIMPLE_NO  ||
+		state == SUBSHELL_FINISH
+		))
+	    {
+	    	curCmd = complete_command(curCmd,cmdBuffer);
+		return curCmd;
+	    }
+	    else if(state == SIMPLE_INIT){
+	    	if(cmdBuffer!=NULL){ //combine situation
+			if(cmdBuffer->type == SEQUENCE_COMMAND){	//single command;
+				curCmd = cmdBuffer->u.command[0];
+				free(cmdBuffer);
+				return curCmd;
+			}
+			else
+			{
+	    			error(1,0,"error @ line %d, incomplete script\n",s->curLineNum);
+			}
 		}
-		else
-		{
-    			error(1,0,"error @ line %d, incomplete script\n",s->curLineNum);
+		else{
+			return 0;	
 		}
-	}
-	else{
-		return 0;	
-	}
+	    }
+	   else{
+    	       error(1,0,"error @ line %d, incomplete script\n",s->curLineNum);
+           }
     }
     else{
     	error(1,0,"error @ line %d, incomplete script\n",s->curLineNum);
