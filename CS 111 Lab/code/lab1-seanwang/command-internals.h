@@ -39,8 +39,8 @@ struct command
 struct command_stream
 {
 	char** tokens;
-	int size; //total # of tokens
+	unsigned int size; //total # of tokens
 	size_t maxsize;
-	char** ptr;
+	unsigned int ptrIndex;
 	int curLineNum;
 };

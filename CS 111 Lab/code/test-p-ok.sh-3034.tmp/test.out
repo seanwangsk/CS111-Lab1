@@ -22,22 +22,20 @@
       sort -u>out \
   ||
     echo sort failed!
-readjust
-readjust
 # 7
-        a \
-      &&
-        b \
-    ||
-      c \
-  &&
-      d \
-    |
-      e \
-  &&
+              a \
+            &&
+              b \
+          ||
+            c \
+        &&
+          d \
+      |
+        e \
+    &&
       f \
-    |
-      g<h
+  |
+    g<h
 # 8
     a<b>c \
   |

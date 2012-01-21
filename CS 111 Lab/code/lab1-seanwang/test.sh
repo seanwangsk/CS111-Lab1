@@ -1,6 +1,6 @@
 true
 
-(g++ -c foo.c)
+g++ -c foo.c
 
 : : :
 

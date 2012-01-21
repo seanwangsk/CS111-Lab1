@@ -22,8 +22,6 @@
       sort -u>out \
   ||
     echo sort failed!
-readjust
-readjust
 # 7
         a \
       &&

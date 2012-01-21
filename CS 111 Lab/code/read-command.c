@@ -59,7 +59,7 @@ make_command_stream (int (*get_next_byte) (void *),
 			curLineNum++;
 		}
 	}
-	else if(state==WAIT_FOR_AND&&cGet!="&"){
+	else if(state==WAIT_FOR_AND&&cGet!='&'){
 		error(1,0,"error @ line %d\n",curLineNum);
 	}
 	else{ //not in comment status
@@ -130,19 +130,19 @@ make_command_stream (int (*get_next_byte) (void *),
 					state = NORMAL;
 				}
 				else{
-					error(1,0,"parse error @ %d\n",curLineNum);
+					error(1,0,"parse error @ %d with illegal charactor %c\n",curLineNum,cGet);
 				}
 		}
 	}
   }while(cGet!=EOF);
-  cmdStm->ptr = cmdStm->tokens; //init the ptr
+  cmdStm->ptrIndex = 0; //init the ptr
   cmdStm->curLineNum = 1;
   int i;
-//#ifdef Debug
+#ifdef Debug
   for(i=0;i<cmdStm->size;i++){
-//  	printf("%s ",cmdStm->tokens[i]);//not work
+ 	printf("%s ",cmdStm->tokens[i]);//not work
   }
-//#endif
+#endif
   return cmdStm;
 }
 
@@ -168,25 +168,22 @@ init_command_stream(command_stream_t* s){
 	(*s) = checked_malloc(sizeof(struct command_stream));
 	(*s)->tokens = checked_malloc(initsize*sizeof(char*));
 	(*s)->size = 0;
-	(*s)->ptr = (*s)->tokens;
+	(*s)->ptrIndex = 0;
 	(*s)->maxsize = initsize*sizeof(char*);
 }
 
-void 
-change_last_token(command_stream_t s, char* token){
-	*(s->ptr-1)=token;
+void
+change_last_token(command_stream_t s,char* token){
+	s->tokens[s->ptrIndex-1] = token;
 }
-
 void 
 add_token(command_stream_t s, char* token){
 	if(strlen(token)>0){
-		*(s->ptr) = token;
-		s->ptr++;
-		unsigned int offset = s->ptr-s->tokens;
-		if(offset >= (s->maxsize)/sizeof(char*)){
+		s->tokens[s->ptrIndex] = token;
+		s->ptrIndex++;
+		if(s->ptrIndex >= (s->maxsize)/sizeof(char*)){
 			char** reStream = checked_grow_alloc(s->tokens,&(s->maxsize));
 			s->tokens = reStream;
-			s->ptr = s->tokens + offset;
 		}
 		s->size++;
 	}
@@ -274,18 +271,14 @@ parse_Command(command_stream_t s, int isSub)
     
     
     enum command_state state = SIMPLE_INIT;   
-    int i;
     
-    int curOffset = (s->ptr - s->tokens);
     
-    for(i=curOffset; i < s->size;i++){
-        s->ptr++;
-        
-        char* token = s->tokens[i];
-        
+    while(s->ptrIndex < s->size){
+        char* token = s->tokens[s->ptrIndex];
+	s->ptrIndex++;
 #ifdef Debug     
         printf("#%d token is %s\n",s->curLineNum,token);
-        printf("i index = %d\n",i);
+        printf("i index = %d\n",s->ptrIndex);
         printf("curOffset = %d\n",curOffset);
 #endif
         
@@ -299,27 +292,18 @@ parse_Command(command_stream_t s, int isSub)
 #endif
                 if(isEqual(token,"(")){//XIA: for subshell
                     curCmd = parse_subshell(s);
+		
 #ifdef Debug  
                     print_command(curCmd);
-                    printf("Offset Before reset: %d\ni before reset: %d\n",curOffset,i);
 #endif
-                    
-
-                    curOffset = (s->ptr - s->tokens);/////////////////////
-                    i = curOffset - 1;/////////////////////////XIA: to jump directly to the last token enter
-
-#ifdef Debug  
-                    printf("Offset Reset to %d\ni  reset to: %d\n",curOffset,i);
-#endif
-                    
-                    if(i == s->size) // if ")" is the last token of the script  then return curCmd directly;
+                    /*if(i == s->size) // if ")" is the last token of the script  then return curCmd directly;
                     {
                         if(cmdBuffer != NULL){
                             cmdBuffer->u.command[1] = curCmd;
                             curCmd = cmdBuffer;
                         }
                         return curCmd;
-                    }
+                    }*/
 
                     //curCmd = complete_command(curCmd,cmdBuffer);
                     
@@ -366,7 +350,7 @@ parse_Command(command_stream_t s, int isSub)
                 else if(isEqual(token,"\n")){
                     //XIA: for subshell
                     if(isSub != 0){
-                        //ignore \n
+                       //ignore \n
                     }
                     else
                     {
@@ -521,28 +505,19 @@ parse_Command(command_stream_t s, int isSub)
                 break;
                 
             case SUBSHELL_FINISH:
-#ifdef Debug
-                printf("subshell finish\n");
-#endif
                 //XIA: for subshell inside a subshell
-                if((isEqual(token,")"))&&(isSub != 0)){
-                    
+                if((isEqual(token,")"))&&(isSub != 0)){                    
                     curCmd = complete_command(curCmd,cmdBuffer);
-#ifdef Debug
-                    printf("returning from subshell from subshell_finish!!!!\n");
-#endif
                     state = SIMPLE_INIT;
-                    return curCmd; 
-                
+                    return curCmd;                 
                 }
                 else if(isEqual(token,"\n")){
-#ifdef Debug
-                    printf("inside subshell finish\n");
-                    print_command(curCmd);                    
-#endif
                     //XIA: for subshell // if inside subShell then take it as a sequence command
                     if(isSub != 0){
                         //ignore \n//need to implement sequence command here!!!!!!!!
+			curCmd = complete_command(curCmd,cmdBuffer);
+			cmdBuffer = push_command_buffer(curCmd, ";");                 
+                    	curCmd = init_command();
                     }
                     else//if not insdie subShell then return
                     {
@@ -566,7 +541,7 @@ parse_Command(command_stream_t s, int isSub)
                     curCmd = init_command();
                     state = SIMPLE_INIT;
                 }
-                else if(i >= s->size - 1){
+                else if(s->ptrIndex >= s->size - 1){
                     curCmd = complete_command(curCmd,cmdBuffer);
 #ifdef Debug
                     printf("returning from subshell from subshell_finish when the pointing to the last token\n");
@@ -631,7 +606,22 @@ complete_command(command_t curCmd, command_t cmdBuffer){
 	command_t cmd_finished = curCmd;	
 	if(cmdBuffer != NULL){
                         cmdBuffer->u.command[1] = curCmd;
-                        cmd_finished = cmdBuffer;
+			command_t cmdBef = cmdBuffer->u.command[0];
+			if(cmdBef->type != SIMPLE_COMMAND && cmdBef->type != SUBSHELL_COMMAND)	
+			{
+				if(is_first_prior(cmdBuffer->type, cmdBef->type)){
+					//adjust structure
+					cmdBuffer->u.command[0] = cmdBef->u.command[1];
+					cmdBef->u.command[1] = cmdBuffer;
+					cmd_finished = cmdBef;
+				}
+				else{
+					cmd_finished = cmdBuffer;
+				}
+			}
+			else{
+                        	cmd_finished = cmdBuffer;
+			}
         }
 	return cmd_finished;
 }
@@ -666,6 +656,11 @@ get_command_type(char* token){
 		return AND_COMMAND;
 	}	
 	return -1;
+}
+
+int is_first_prior(enum command_type type1, enum command_type type2){
+	int priority[4] = {2,1,2,3};
+	return (priority[type1]>priority[type2]);
 }
 
 command_t
