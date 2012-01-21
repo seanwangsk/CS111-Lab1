@@ -59,7 +59,7 @@ make_command_stream (int (*get_next_byte) (void *),
 			curLineNum++;
 		}
 	}
-	else if(state==WAIT_FOR_AND&&cGet!="&"){
+	else if(state==WAIT_FOR_AND && cGet!='&'){
 		error(1,0,"error @ line %d\n",curLineNum);
 	}
 	else{ //not in comment status
@@ -79,6 +79,7 @@ make_command_stream (int (*get_next_byte) (void *),
 				}
 				else{
 					state = WAIT_FOR_AND;
+					printf("wait for end\n");
 				}
 				break;
 			case '|':
