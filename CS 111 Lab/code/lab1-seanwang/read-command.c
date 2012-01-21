@@ -47,8 +47,6 @@ make_command_stream (int (*get_next_byte) (void *),
   size_t bufferSize = initsize*sizeof(char);
   init_buffer(&buffer,&ptr);
 
-  int kkk = 0;
-
   char cGet;
     do{
 	cGet =get_next_byte(get_next_byte_argument);
@@ -59,7 +57,7 @@ make_command_stream (int (*get_next_byte) (void *),
 			curLineNum++;
 		}
 	}
-	else if(state==WAIT_FOR_AND&&cGet!='&'){
+	else if(state==WAIT_FOR_AND && cGet!='&'){
 		error(1,0,"error @ line %d\n",curLineNum);
 	}
 	else{ //not in comment status
@@ -323,6 +321,11 @@ parse_Command(command_stream_t s, int isSub)
                     state = SIMPLE_INIT;	
                 }
                 else if(isNormalToken(token)){
+		    if(haveCmd!=0){
+		    	curCmd = complete_command(curCmd,cmdBuffer);
+			cmdBuffer = push_command_buffer(curCmd,";");
+			curCmd = init_command();
+		    }
                     curCmd->u.word = checked_malloc(initsize*sizeof(char*));
                     curCmdWordMax = initsize * sizeof(char*);
                     curCmd->u.word[0] = token;
@@ -350,7 +353,9 @@ parse_Command(command_stream_t s, int isSub)
                 else if(isEqual(token,"\n")){
                     //XIA: for subshell
                     if(isSub != 0){
-                        //ignore \n
+                       //ignore \n
+			state = SIMPLE_INIT;
+			haveCmd = 1;
                     }
                     else
                     {
@@ -505,28 +510,19 @@ parse_Command(command_stream_t s, int isSub)
                 break;
                 
             case SUBSHELL_FINISH:
-#ifdef Debug
-                printf("subshell finish\n");
-#endif
                 //XIA: for subshell inside a subshell
-                if((isEqual(token,")"))&&(isSub != 0)){
-                    
+                if((isEqual(token,")"))&&(isSub != 0)){                    
                     curCmd = complete_command(curCmd,cmdBuffer);
-#ifdef Debug
-                    printf("returning from subshell from subshell_finish!!!!\n");
-#endif
                     state = SIMPLE_INIT;
-                    return curCmd; 
-                
+                    return curCmd;                 
                 }
                 else if(isEqual(token,"\n")){
-#ifdef Debug
-                    printf("inside subshell finish\n");
-                    print_command(curCmd);                    
-#endif
                     //XIA: for subshell // if inside subShell then take it as a sequence command
                     if(isSub != 0){
                         //ignore \n//need to implement sequence command here!!!!!!!!
+			curCmd = complete_command(curCmd,cmdBuffer);
+			cmdBuffer = push_command_buffer(curCmd, ";");                 
+                    	curCmd = init_command();
                     }
                     else//if not insdie subShell then return
                     {
