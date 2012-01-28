@@ -329,6 +329,7 @@ parse_Command(command_stream_t s, int isSub)
                     curCmd->u.word = checked_malloc(initsize*sizeof(char*));
                     curCmdWordMax = initsize * sizeof(char*);
                     curCmd->u.word[0] = token;
+		    curCmd->u.word[1] = NULL;
                     curCmdWordIndex = 1; 
                     state = SIMPLE_NO;
                 }
@@ -375,10 +376,11 @@ parse_Command(command_stream_t s, int isSub)
                     printf("normal word in SIMPLE_NO\n");
 #endif
                     state = SIMPLE_NO;
-                    if(curCmdWordIndex >= curCmdWordMax){
+                    if(curCmdWordIndex + 1>= curCmdWordMax){
                         curCmd->u.word = checked_grow_alloc(curCmd->u.word,&curCmdWordMax);
                     }
                     curCmd->u.word[curCmdWordIndex] = token;
+		    curCmd->u.word[curCmdWordIndex+1] = NULL;
                     curCmdWordIndex++;
                 }
                 else if(isCombineToken(token)){
@@ -635,6 +637,9 @@ command_t
 init_command(void){
 	command_t cmd = checked_malloc(sizeof(struct command));
         cmd->type = SIMPLE_COMMAND;
+	cmd->status = -1;
+	cmd->input = 0;
+	cmd->output = 0;
 	return cmd;
 }
 

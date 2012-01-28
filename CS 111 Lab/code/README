@@ -1,3 +1,9 @@
 This code is written by Zhiyang Wang 303991529 and Minhan Xia 204000665
 
-Fullfill almost all functions except the case where there are more than one line in the subshell
+Finished all stuff for Lab1a including subshell function. And also, for
+(
+  a
+  b
+)
+it will be parsed as (a;b)
+
