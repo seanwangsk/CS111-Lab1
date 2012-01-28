@@ -35,6 +35,44 @@ exec_cmd (command_t c){
 	}
 	else if(c->type == PIPE_COMMAND){
 		//need to do something here
+		//if simple pipe
+		printf("1\n");
+		int pipefd[2];
+		pipe(pipefd);
+		pid_t p;
+		if((p=fork())==0){ //child thread
+			dup2(pipefd[0],0);
+			close(pipefd[1]);
+			return exec_cmd(c->u.command[1]);
+		}
+		else if(p>0){	//father
+			dup2(pipefd[1],1);
+			close(pipefd[0]);
+			exec_cmd(c->u.command[0]);
+			//int status;
+			//int pid = wait(&status);
+			return 0;
+			//int returnV;
+			//if(pid>0){
+			//	if(WIFEXITED(status)){
+			//		returnV = !WEXITSTATUS(status);
+			//	}
+			//	else if(WIFSIGNALED(status)){
+			//		returnV = !WTERMSIG(status);
+			//	}
+			//	else{
+			//		error(1,0,"Command execution is interrupted");
+			//	}
+			//}
+			//else{
+			//	error(1,0,"Command execution is interrupted");
+			//}
+		}
+		else{	//cannot create child process
+			error(1,0,"ERROR: Cannot create process\n");
+		}
+
+
 	}
 	else if(c->type == SUBSHELL_COMMAND){
 		return exec_cmd(c->u.subshell_command);

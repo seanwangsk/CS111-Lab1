@@ -1,1 +1,1 @@
-ls >b
+(ls;ls) | sort 

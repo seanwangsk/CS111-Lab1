@@ -44,3 +44,4 @@ struct command_stream
 	unsigned int ptrIndex;
 	int curLineNum;
 };
+
