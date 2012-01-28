@@ -36,7 +36,6 @@ exec_cmd (command_t c){
 	else if(c->type == PIPE_COMMAND){
 		//need to do something here
 		//if simple pipe
-		printf("1\n");
 		int pipefd[2];
 		pipe(pipefd);
 		pid_t p;
@@ -49,30 +48,27 @@ exec_cmd (command_t c){
 			dup2(pipefd[1],1);
 			close(pipefd[0]);
 			exec_cmd(c->u.command[0]);
-			//int status;
-			//int pid = wait(&status);
-			return 0;
-			//int returnV;
-			//if(pid>0){
-			//	if(WIFEXITED(status)){
-			//		returnV = !WEXITSTATUS(status);
-			//	}
-			//	else if(WIFSIGNALED(status)){
-			//		returnV = !WTERMSIG(status);
-			//	}
-			//	else{
-			//		error(1,0,"Command execution is interrupted");
-			//	}
-			//}
-			//else{
-			//	error(1,0,"Command execution is interrupted");
-			//}
+			int status;
+			int pid = wait(&status);
+			if(pid>0){
+				if(WIFEXITED(status)){
+					return !WEXITSTATUS(status);
+				}
+				else if(WIFSIGNALED(status)){
+					return !WTERMSIG(status);
+				}
+				else{
+					error(1,0,"Command execution is interrupted");
+				}
+			}
+			else{
+				error(1,0,"Command execution is interrupted");
+			}
 		}
 		else{	//cannot create child process
 			error(1,0,"ERROR: Cannot create process\n");
+		
 		}
-
-
 	}
 	else if(c->type == SUBSHELL_COMMAND){
 		return exec_cmd(c->u.subshell_command);
@@ -87,7 +83,6 @@ exec_cmd (command_t c){
 			}
 			dup2(iFD,0);
 			close(iFD);
-
 		}
 		if(c->output!=0){ //has output
 			int oFD = open(c->output,O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IRGRP | S_IWGRP | S_IWUSR);
@@ -131,7 +126,7 @@ exec_cmd (command_t c){
 	else{
 		error(1,0,"cannot recognize command type as %d\n",c->type);
 	}
-	return 1;
+	return 0;
 }
 
 void
