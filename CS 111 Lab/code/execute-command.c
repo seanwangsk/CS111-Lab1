@@ -38,7 +38,6 @@ exec_cmd (command_t c){
 		//if simple pipe
 		int pipefd[2];
 		pipe(pipefd);
-		printf("1 is %d, 2 is %d\n",pipefd[0],pipefd[1]);
 		pid_t p;
 		if((p=fork())==0){ //child thread
 			dup2(pipefd[0],0);
@@ -53,7 +52,6 @@ exec_cmd (command_t c){
 			close(pipefd[1]); //finish pipeing
 			close(1);
 			//dup2(a,1);		
-			printf("hello\n");
 			int status;
 			if(wait(&status)>0){
 				if(WIFEXITED(status)){
@@ -144,16 +142,16 @@ execute_command (command_t c, int time_travel)
   /* FIXME: Replace this with your implementation.  You may need to
      add auxiliary functions and otherwise modify the source code.
      You can also use external functions defined in the GNU C Library.  */
+	int a = dup(0);
+	int b = dup(1);
+	int cc = dup(2);
 	if(time_travel == 0){ //normal mode
-		pid_t p;
-		if((p = fork())==0){
-			printf("==================\n");
-			exec_cmd(c);	
-		}
-		else if(p>0){
-			int status;
-			wait(&status);
-		}
+		fflush(stderr);
+		exec_cmd(c);	
 	}
-
+	dup2(a,0);
+	dup2(b,1);
+	dup2(cc,2);
+	fflush(stderr);
+    
 }
