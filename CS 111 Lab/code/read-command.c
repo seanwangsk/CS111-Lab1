@@ -24,6 +24,9 @@ void init_buffer(char**, char**);
 void init_command_stream(command_stream_t*);
 void change_last_token(command_stream_t, char*);
 void add_token(command_stream_t, char*,int);
+int isCombineToken(char* token);
+int is_first_prior(enum command_type type1, enum command_type type2);
+int get_command_type(char* token);
 
 //command_t parseSubshell(command_stream_t);
 //command_t parse_Command(command_stream_t, int);

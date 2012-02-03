@@ -1,5 +1,6 @@
 // UCLA CS 111 Lab 1 command internals
 #include <stdlib.h>
+
 enum command_type
   {
     AND_COMMAND,         // A && B
@@ -33,6 +34,7 @@ struct command
     // for SUBSHELL_COMMAND:
     struct command *subshell_command;
   } u;
+    
 };
 
 
@@ -44,4 +46,6 @@ struct command_stream
 	unsigned int ptrIndex;
 	int curLineNum;
 };
+
+
 

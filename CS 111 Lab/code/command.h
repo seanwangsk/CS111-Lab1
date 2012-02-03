@@ -3,6 +3,34 @@
 typedef struct command *command_t;
 typedef struct command_stream *command_stream_t;
 
+typedef struct command_unit *command_unit_t; 
+typedef struct file_tracker *file_tracker_t;
+
+
+struct command_unit
+{
+    command_t *cmd;
+    int block;                  //indicate how many files are still blocking
+    char **fileRead;
+    char **fileWrite;
+    unsigned int readNum;       //total # of 
+    unsigned int writeNum;      //
+};
+
+struct file_tracker
+{
+    char* fileName;
+    int writing;               //indicate how many command are reading or writing this file
+    int reading;   
+    struct cmd_queue *q_head;
+};
+
+typedef struct cmd_queue
+{
+    command_unit_t cmd_unit;
+    struct cmd_queue *next;
+}cmd_queue;
+
 /* Create a command stream from LABEL, GETBYTE, and ARG.  A reader of
    the command stream will invoke GETBYTE (ARG) to get the next byte.
    GETBYTE will return the next input byte, or a negative number
@@ -23,3 +51,9 @@ void execute_command (command_t, int);
 /* Return the exit status of a command, which must have previously been executed.
    Wait for the command, if it is not already finished.  */
 int command_status (command_t);
+
+//for parallel excution
+
+
+
+

@@ -10,6 +10,10 @@
 static char const *program_name;
 static char const *script_name;
 
+file_tracker_t *trackers;
+int tracker_index = 0;
+size_t tracker_size = 0;
+
 static void
 usage (void)
 {
@@ -54,6 +58,13 @@ main (int argc, char **argv)
 
   command_t last_command = NULL;
   command_t command;
+    
+    
+  //initialize the file trackers  
+    trackers = NULL;
+    tracker_index = 0;
+    tracker_size = 0;
+    
   while ((command = read_command_stream (command_stream)))
     {
       if (print_tree)
@@ -63,9 +74,16 @@ main (int argc, char **argv)
 	}
       else
 	{
+        printf ("# %d\n", command_number++);
 	  last_command = command;
 	  execute_command (command, time_travel);
 	}
+    }
+    //dont know whether this is correct
+    while(command_number>0)
+    {
+        wait();
+        command_number--;
     }
 
   return print_tree || !last_command ? 0 : command_status (last_command);
