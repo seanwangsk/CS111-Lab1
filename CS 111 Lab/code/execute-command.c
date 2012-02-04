@@ -94,7 +94,8 @@ exec_cmd (command_t c){
 				close(pipefd[0]);
 				exec_cmd(c->u.command[0]);
 				close(pipefd[1]); //finish pipeing
-				close(1);
+			//	close(1);
+				printf("lalala");
 				exit(1);
 			}
 			else{
@@ -128,30 +129,30 @@ exec_cmd (command_t c){
 		return exec_cmd(c->u.subshell_command);
 	}
 	else if(c->type == SIMPLE_COMMAND){
-		//the end of words should be NULL
-		if(c->input!=0){ //has input 
-			int iFD = open(c->input,O_RDONLY);
-			if(iFD==-1){
-				perror("Open Input File");
-				return 0; //fail
-			}
-			dup2(iFD,0);
-			close(iFD);
-		}
-		if(c->output!=0){ //has output
-			int oFD = open(c->output,O_WRONLY | O_TRUNC | O_CREAT/*, S_IRUSR | S_IRGRP | S_IWGRP | S_IWUSR*/);
-			if(oFD==-1){
-				perror("Open Output File");
-				return 0;
-			}
-			dup2(oFD,1);
-			close(oFD);
-		}
-
+		
 		pid_t p;
 		if((p=fork())==0){
+			//the end of words should be NULL
+			if(c->input!=0){ //has input 
+				int iFD = open(c->input,O_RDONLY);
+				if(iFD==-1){
+					perror("Open Input File");
+					return 0; //fail
+				}	
+				dup2(iFD,0);
+				close(iFD);
+			}
+			if(c->output!=0){ //has output
+				int oFD = open(c->output,O_WRONLY | O_TRUNC | O_CREAT/*, S_IRUSR | S_IRGRP | S_IWGRP | S_IWUSR*/);
+				if(oFD==-1){
+					perror("Open Output File");
+					return 0;
+				}
+				dup2(oFD,1);
+				close(oFD);
+			}
 			execvp(c->u.word[0],c->u.word);
-			perror("execvp"); //something wrong happen so this line is executed
+			perror(c->u.word[0]); //something wrong happen so this line is executed
 			return 0;
 		}
 		else if(p>0){	//father
