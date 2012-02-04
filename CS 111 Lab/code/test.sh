@@ -1,2 +1,0 @@
-ls | grep test
-ls

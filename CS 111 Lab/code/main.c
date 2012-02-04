@@ -4,9 +4,10 @@
 #include <error.h>
 #include <getopt.h>
 #include <stdio.h>
+#include <sys/wait.h>
 
 #include "command.h"
-#define DEBUG
+//#define DEBUG
 
 static char const *program_name;
 static char const *script_name;
@@ -83,10 +84,11 @@ main (int argc, char **argv)
 	}
     }
     //dont know whether this is correct
+    int status;
     if(time_travel)
         while(command_number>0)
         {
-            wait();
+            wait(&status);
             command_number--;
         }
 

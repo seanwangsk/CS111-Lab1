@@ -15,7 +15,7 @@
 
 #define initsize 20//some problem
 
-#define DEBUG
+//#define DEBUG
 
 extern file_tracker_t *trackers;
 extern int tracker_index;           //the next empty slot for file trackers
@@ -34,6 +34,7 @@ int check_output_file_block(char **files);
 void add_cmd_into_queue(command_unit_t cmd, int index);
 void check_file_block(command_unit_t cmd);
 void execute_command_unit(command_unit_t cmd);
+void check_file_block_withoutadd(command_unit_t cmd);
 
 /*
 void 
@@ -94,7 +95,8 @@ exec_cmd (command_t c){
 				close(pipefd[0]);
 				exec_cmd(c->u.command[0]);
 				close(pipefd[1]); //finish pipeing
-				close(1);
+			//	close(1);
+				printf("lalala");
 				exit(1);
 			}
 			else{
@@ -128,30 +130,30 @@ exec_cmd (command_t c){
 		return exec_cmd(c->u.subshell_command);
 	}
 	else if(c->type == SIMPLE_COMMAND){
-		//the end of words should be NULL
-		if(c->input!=0){ //has input 
-			int iFD = open(c->input,O_RDONLY);
-			if(iFD==-1){
-				perror("Open Input File");
-				return 0; //fail
-			}
-			dup2(iFD,0);
-			close(iFD);
-		}
-		if(c->output!=0){ //has output
-			int oFD = open(c->output,O_WRONLY | O_TRUNC | O_CREAT/*, S_IRUSR | S_IRGRP | S_IWGRP | S_IWUSR*/);
-			if(oFD==-1){
-				perror("Open Output File");
-				return 0;
-			}
-			dup2(oFD,1);
-			close(oFD);
-		}
-
+		
 		pid_t p;
 		if((p=fork())==0){
+			//the end of words should be NULL
+			if(c->input!=0){ //has input 
+				int iFD = open(c->input,O_RDONLY);
+				if(iFD==-1){
+					perror("Open Input File");
+					return 0; //fail
+				}	
+				dup2(iFD,0);
+				close(iFD);
+			}
+			if(c->output!=0){ //has output
+				int oFD = open(c->output,O_WRONLY | O_TRUNC | O_CREAT/*, S_IRUSR | S_IRGRP | S_IWGRP | S_IWUSR*/);
+				if(oFD==-1){
+					perror("Open Output File");
+					return 0;
+				}
+				dup2(oFD,1);
+				close(oFD);
+			}
 			execvp(c->u.word[0],c->u.word);
-			perror("execvp"); //something wrong happen so this line is executed
+			perror(c->u.word[0]); //something wrong happen so this line is executed
 			return 0;
 		}
 		else if(p>0){	//father
@@ -185,8 +187,12 @@ exec_cmd (command_t c){
 	return 0;
 }
 
-void read_command(command_t c)
+void 
+read_command(command_t c)
 {
+#ifdef DEBUG
+    printf("enter read_command\n");
+#endif
    
     command_unit_t cur_command_unit = checked_malloc(sizeof(struct command_unit));
     cur_command_unit->readNum = 0;
@@ -233,16 +239,18 @@ void read_command(command_t c)
         printf("file_trackers includes: %s\n",trackers[i]->fileName);
 #endif
     
-    check_file_block(cur_command_unit);
-
+    check_file_block_withoutadd(cur_command_unit);
+    
 #ifdef DEBUG
     printf("blocked file count: %d\n\n",cur_command_unit->block);
 #endif
-    
     //if nothing blocks execute the command unit
     if(cur_command_unit->block == 0)
         execute_command_unit(cur_command_unit);
-        
+    else
+    {
+        check_file_block(cur_command_unit);
+    }
 }
 
 void execute_command_unit(command_unit_t cmd)
@@ -253,102 +261,7 @@ void execute_command_unit(command_unit_t cmd)
 #endif
     //block all the file command unit needs to write
     char **ptr = cmd->fileWrite;
-    while(*ptr)
-    {
         
-        int i = 0;
-        for(i=0;i<tracker_index;i++)
-        {
-            if(isEqual(trackers[i]->fileName,(*ptr)))
-                break;
-        }
-        
-        if(!isEqual(trackers[i]->fileName,(*ptr)))
-            perror("could not find the file in the trackers");
-        else
-        {
-            //mark the file
-            trackers[i]->writing++;
-            
-            //delete the commmand unit from the files queue
-            struct cmd_queue *findCmd = trackers[i]->q_head;
-
-            
-            if((*findCmd).cmd_unit == cmd)//q_head is pointing to cmd
-            {
-#ifdef DEBUG
-                printf("!!!!!!!!!!!!!!!!!111111\n");
-#endif
-                trackers[i]->q_head = findCmd->next;
-            }
-            else
-            {
-#ifdef DEBUG
-                printf("//////////////\n");
-#endif
-                do {
-                    
-                    struct cmd_queue *tmp = findCmd->next;
-                    if(tmp->cmd_unit==cmd)
-                    {
-                        findCmd->next=(findCmd->next)->next;
-                    }
-                    
-                    findCmd = findCmd->next;
-                } while (findCmd != NULL);
-                
-            }
-        }
-        ptr++;
-    }
-    
-    //reading++ for all the file that command unit needs to read
-    ptr = cmd->fileRead;
-    while(*ptr)
-    {
-        
-        int i = 0;
-        for(i=0;i<tracker_index;i++)
-        {
-            if(isEqual(trackers[i]->fileName,(*ptr)))
-                break;
-        }
-        
-        if(!isEqual(trackers[i]->fileName,(*ptr)))
-            perror("could not find the file in the trackers");
-        else
-        {
-            //mark the file
-            trackers[i]->reading++;
-            
-            //delete the commmand unit from the files queue
-            struct cmd_queue *findCmd = trackers[i]->q_head;
-            
-            
-            if((*findCmd).cmd_unit == cmd)//q_head is pointing to cmd
-            {
-                trackers[i]->q_head = findCmd->next;
-            }
-            else
-            {
-                ////////////////////////////////////////////might be problem here
-                //printf("//////////////\n");
-                do {
-                    
-                    struct cmd_queue *tmp = findCmd->next;
-                    if(tmp->cmd_unit==cmd)
-                    {
-                        findCmd->next=(findCmd->next)->next;
-                    }
-                    
-                    findCmd = findCmd->next;
-                } while (findCmd != NULL);
-                
-            }
-        }
-        ptr++;
-    }
-   
    
 #ifdef DEBUG
     printf("begin parallel excution\n");
@@ -357,6 +270,112 @@ void execute_command_unit(command_unit_t cmd)
     int pid = fork();
     if(pid == 0)
     {
+        ptr = cmd->fileWrite;
+        while(*ptr)
+        {
+            
+            int i = 0;
+            for(i=0;i<tracker_index;i++)
+            {
+                if(isEqual(trackers[i]->fileName,(*ptr)))
+                    break;
+            }
+            
+            if(!isEqual(trackers[i]->fileName,(*ptr)))
+                perror("could not find the file in the trackers");
+            else
+            {
+                //mark the file
+                trackers[i]->writing++;
+                
+                //delete the commmand unit from the files queue
+                if(trackers[i]->q_head != NULL)
+                {
+                    struct cmd_queue *findCmd = trackers[i]->q_head;
+                    
+                    if((*findCmd).cmd_unit == cmd)//q_head is pointing to cmd
+                    {
+#ifdef DEBUG
+                        printf("!!!!!!!!!!!!!!!!!111111\n");
+#endif
+                        trackers[i]->q_head = findCmd->next;
+                    }
+                    else
+                    {
+#ifdef DEBUG
+                        printf("//////////////\n");
+#endif
+                        do {
+                            
+                            struct cmd_queue *tmp = findCmd->next;
+                            if(tmp->cmd_unit==cmd)
+                            {
+                                findCmd->next=(findCmd->next)->next;
+                            }
+                            
+                            findCmd = findCmd->next;
+                        } while (findCmd != NULL);
+                        
+                    }
+                }
+                
+            }
+            ptr++;
+        }
+        
+        
+        //reading++ for all the file that command unit needs to read
+        ptr = cmd->fileRead;
+        while(*ptr)
+        {
+            
+            int i = 0;
+            for(i=0;i<tracker_index;i++)
+            {
+                if(isEqual(trackers[i]->fileName,(*ptr)))
+                    break;
+            }
+            
+            if(!isEqual(trackers[i]->fileName,(*ptr)))
+                perror("could not find the file in the trackers");
+            else
+            {
+                //mark the file
+                trackers[i]->reading++;
+                
+                //delete the commmand unit from the files queue
+                if(trackers[i]->q_head != NULL)
+                {
+                    struct cmd_queue *findCmd = trackers[i]->q_head;
+                    
+                    
+                    if((*findCmd).cmd_unit == cmd)//q_head is pointing to cmd
+                    {
+                        //  printf("!!!!!!!!!!!!\n");
+                        trackers[i]->q_head = findCmd->next;
+                    }
+                    else
+                    {
+                        ////////////////////////////////////////////might be problem here
+                        //  printf("//////////////\n");
+                        do {
+                            
+                            struct cmd_queue *tmp = findCmd->next;
+                            if(tmp->cmd_unit==cmd)
+                            {
+                                findCmd->next=(findCmd->next)->next;
+                            }
+                            
+                            findCmd = findCmd->next;
+                        } while (findCmd != NULL);
+                        
+                    }
+                }
+            }
+            ptr++;
+        }
+
+        
         int grandchild = fork();
         if(grandchild == 0)
         {
@@ -366,6 +385,7 @@ void execute_command_unit(command_unit_t cmd)
             ////////////////////////////////////////////////////////////
             //print_command(*temp);   
             exec_cmd(*temp);
+ 
             exit(0);
         }
         else
@@ -392,35 +412,6 @@ void execute_command_unit(command_unit_t cmd)
                     //mark the file
                     trackers[i]->writing--; //writing--
                     
-                    //delete the commmand unit from the files queue
-                    struct cmd_queue *findCmd = trackers[i]->q_head;
-                    
-                    
-                    if((*findCmd).cmd_unit == cmd)//q_head is pointing to cmd
-                    {
-#ifdef DEBUG
-                        printf("!!!!!!!!!!!!!!!!!111111\n");
-#endif
-                        trackers[i]->q_head = findCmd->next;
-                    }
-                    else
-                    {
-                        /////////////////////////////////////////////////可能有问题
-#ifdef DEBUG
-                        printf("//////////////\n");
-#endif
-                        do {
-                            
-                            struct cmd_queue *tmp = findCmd->next;
-                            if(tmp->cmd_unit==cmd)
-                            {
-                                findCmd->next=(findCmd->next)->next;
-                            }
-                            
-                            findCmd = findCmd->next;
-                        } while (findCmd != NULL);
-                        
-                    }
                 }
                 ptr++;
             }
@@ -436,46 +427,21 @@ void execute_command_unit(command_unit_t cmd)
                     if(isEqual(trackers[i]->fileName,(*ptr)))
                         break;
                 }
-                
+                  
                 if(!isEqual(trackers[i]->fileName,(*ptr)))
                     perror("could not find the file in the trackers");
                 else
                 {
-                    //mark the file
+                    //mark the file reading --;
                     trackers[i]->reading--;
-                    
-                    //delete the commmand unit from the files queue
-                    struct cmd_queue *findCmd = trackers[i]->q_head;
-                    
-                    
-                    if((*findCmd).cmd_unit == cmd)//q_head is pointing to cmd
-                    {
-#ifdef DEBUG
-                        printf("!!!!!!!!!!!!!!!!!111111\n");
-#endif
-                        trackers[i]->q_head = findCmd->next;
-                    }
-                    else
-                    {
-                        /////////////////////////////////////////////////可能有问题
-#ifdef DEBUG
-                        printf("//////////////\n");
-#endif
-                        do {
-                            
-                            struct cmd_queue *tmp = findCmd->next;
-                            if(tmp->cmd_unit==cmd)
-                            {
-                                findCmd->next=(findCmd->next)->next;
-                            }
-                            
-                            findCmd = findCmd->next;
-                        } while (findCmd != NULL);
-                        
-                    }
                 }
                 ptr++;
-            }     
+            }
+            
+            
+#ifdef DEBUG
+            printf("after excution, begin to search another command_unit to excute\n");
+#endif
             ///////////////////////////////////////////////////////might be problem here
             //search inside files to check if there is other command_unit that is blocked
             ptr = cmd->fileWrite;
@@ -489,6 +455,7 @@ void execute_command_unit(command_unit_t cmd)
                         break;
                 }
                 
+                
                 if(!isEqual(trackers[i]->fileName,(*ptr)))
                     perror("could not find the file in the trackers");
                 else
@@ -498,9 +465,14 @@ void execute_command_unit(command_unit_t cmd)
                     while(findCmd!=NULL)
                     {
                         ((*findCmd).cmd_unit)->block = 0;
-                        check_file_block((*findCmd).cmd_unit);
+                        check_file_block_withoutadd((*findCmd).cmd_unit);
                         if((*findCmd).cmd_unit->block == 0)
+                        {
+#ifdef DEBUG
+                            printf("found another command_unit to excute");
+#endif
                             execute_command_unit((*findCmd).cmd_unit);
+                        }
                         findCmd=findCmd->next;
                     }
                     
@@ -520,18 +492,27 @@ void execute_command_unit(command_unit_t cmd)
                         break;
                 }
                 
+                //printf("here6\n");
                 if(!isEqual(trackers[i]->fileName,(*ptr)))
                     perror("could not find the file in the trackers");
                 else
                 {
                     //find the next command unit in the queue. see if it is block by writing
                     struct cmd_queue *findCmd = trackers[i]->q_head;
+                 /*   
+                    if(findCmd == NULL)
+                        printf("what the fuck\n");
+                   */ 
                     while(findCmd!=NULL)
                     {
                         ((*findCmd).cmd_unit)->block = 0;
-                        check_file_block((*findCmd).cmd_unit);
+                        //check_file_block((*findCmd).cmd_unit);
+                        check_file_block_withoutadd((*findCmd).cmd_unit);
+                    
+                        
                         if((*findCmd).cmd_unit->block == 0)
                             execute_command_unit((*findCmd).cmd_unit);
+                        
                         findCmd=findCmd->next;
                     }
                     
@@ -543,16 +524,20 @@ void execute_command_unit(command_unit_t cmd)
             exit(0);
         }
     }
-     
+    else
+    {
+        
+    }
+    
 }
 
 void
-check_file_block(command_unit_t cmd)
+check_file_block_withoutadd(command_unit_t cmd)
 {
 
 #ifdef DEBUG
-    printf("check file block for command unit:\n");
-    print_command(*(cmd->cmd));
+    printf("check file block without add it into queue\n");
+ //   print_command(*(cmd->cmd));
 #endif
     //check if there is reading file block
     char **ptr = cmd->fileRead;
@@ -573,31 +558,38 @@ check_file_block(command_unit_t cmd)
             //see if there is a command writing to this file
             if(trackers[i]->writing > 0)
                 cmd->block++;
-
             
-            //see if the cmd in the queue needs to write to the file
-            struct cmd_queue *queue_ptr = trackers[i]->q_head;
-            while(queue_ptr!=NULL)
+            else
             {
-                printf("search for somebody needs to use \n");
-                char** file_ptr = (queue_ptr->cmd_unit)->fileWrite;
-                while(*file_ptr)
+                //see if the cmd in the queue needs to write to the file
+                struct cmd_queue *queue_ptr = trackers[i]->q_head;
+                
+                while(queue_ptr!=NULL)
                 {
-                    if(queue_ptr->cmd_unit != cmd)
+                    if(queue_ptr->cmd_unit == cmd)
+                        break;
+#ifdef DEBUG
+                    printf("search for somebody needs to use!!!!!!!!!!! \n");
+#endif
+                    char** file_ptr = (queue_ptr->cmd_unit)->fileWrite;
+                    while(*file_ptr)
                     {
-                        if(trackers[i]->fileName == (*file_ptr))
+                        
+                        if(isEqual(trackers[i]->fileName,(*file_ptr)))
                         {
                             cmd->block++;
                             break;
                         }
+                        file_ptr++;
+                        
                     }
+                    
+                    queue_ptr = queue_ptr->next;
                 }
                 
-                queue_ptr = queue_ptr->next;
             }
-                
             
-            add_cmd_into_queue(cmd,i);
+           // add_cmd_into_queue(cmd,i);
         }
         
         
@@ -624,13 +616,112 @@ check_file_block(command_unit_t cmd)
             if(trackers[i]->writing > 0 || trackers[i]->reading > 0)
                 cmd->block++;
             
+          //  add_cmd_into_queue(cmd,i);
+        }
+        
+        
+        ptr++;
+    }
+   // printf("ttttttt");
+    
+}
+
+
+
+void
+check_file_block(command_unit_t cmd)
+{   
+#ifdef DEBUG
+    printf("check file block and add it into queue\n");
+ //   print_command(*(cmd->cmd));
+#endif
+    //check if there is reading file block
+    char **ptr = cmd->fileRead;
+    while(*ptr)
+    {
+        //find the file inside file tracker
+        int i = 0;
+        for(i=0;i<tracker_index;i++)
+        {
+            if(isEqual(trackers[i]->fileName,(*ptr)))
+                break;
+        }
+        
+        if(!isEqual(trackers[i]->fileName,(*ptr)))
+            perror("cannot find the file inside file tracker");
+        else
+        {
+            //see if there is a command writing to this file
+            if(trackers[i]->writing > 0)
+                cmd->block++;
+            
+            else
+            {
+            //see if the cmd in the queue needs to write to the file
+                struct cmd_queue *queue_ptr = trackers[i]->q_head;
+              
+                while(queue_ptr!=NULL)
+                {
+                   
+                    if(queue_ptr->cmd_unit == cmd)
+                        break;
+#ifdef DEBUG
+                    printf("search for somebody needs to use \n");
+#endif
+                    char** file_ptr = (queue_ptr->cmd_unit)->fileWrite;
+                    while(*file_ptr)
+                    {
+                        
+                    
+                        if(isEqual(trackers[i]->fileName,(*file_ptr)))
+                        {
+                            
+                            cmd->block++;
+                            break;
+                        }
+                        file_ptr++;
+                    }
+                
+                    queue_ptr = queue_ptr->next;
+                }
+                
+                
+            }
+            
+            add_cmd_into_queue(cmd,i);
+        }
+        
+        
+        ptr++;
+    }
+    
+    //check if there is writing file block
+    ptr = cmd->fileWrite;
+    while(*ptr)
+    {
+            
+        //find the file inside file tracker
+        int i = 0;
+        for(i=0;i<tracker_index;i++)
+        {
+            if(isEqual(trackers[i]->fileName,(*ptr)))
+                break;
+        }
+        
+        if(!isEqual(trackers[i]->fileName,(*ptr)))
+            perror("cannot find the file inside file tracker");
+        else
+        {
+            if(trackers[i]->writing > 0 || trackers[i]->reading > 0)
+                cmd->block++;
+            
               add_cmd_into_queue(cmd,i);
         }
         
         
         ptr++;
     }
-
+    
 }
 
 //add command_unit into the queue of file
@@ -665,6 +756,7 @@ add_cmd_into_queue(command_unit_t cmd, int index)
         newGuy->next = NULL;
         ptr->next = newGuy;
     }
+    
 }
 
 
