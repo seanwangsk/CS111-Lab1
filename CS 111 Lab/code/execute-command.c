@@ -267,19 +267,21 @@ void execute_command_unit(command_unit_t cmd)
             
             if((*findCmd).cmd_unit == cmd)//q_head is pointing to cmd
             {
+#ifdef DEBUG
                 printf("!!!!!!!!!!!!!!!!!111111\n");
+#endif
                 trackers[i]->q_head = findCmd->next;
             }
             else
             {
-                
+#ifdef DEBUG
                 printf("//////////////\n");
+#endif
                 do {
                     
                     struct cmd_queue *tmp = findCmd->next;
                     if(tmp->cmd_unit==cmd)
                     {
-                        printf("wtf");
                         findCmd->next=(findCmd->next)->next;
                     }
                     
@@ -327,7 +329,6 @@ void execute_command_unit(command_unit_t cmd)
                     struct cmd_queue *tmp = findCmd->next;
                     if(tmp->cmd_unit==cmd)
                     {
-                        printf("wtf");
                         findCmd->next=(findCmd->next)->next;
                     }
                     
@@ -388,19 +389,22 @@ void execute_command_unit(command_unit_t cmd)
                     
                     if((*findCmd).cmd_unit == cmd)//q_head is pointing to cmd
                     {
+#ifdef DEBUG
                         printf("!!!!!!!!!!!!!!!!!111111\n");
+#endif
                         trackers[i]->q_head = findCmd->next;
                     }
                     else
                     {
                         /////////////////////////////////////////////////可能有问题
+#ifdef DEBUG
                         printf("//////////////\n");
+#endif
                         do {
                             
                             struct cmd_queue *tmp = findCmd->next;
                             if(tmp->cmd_unit==cmd)
                             {
-                                printf("wtf");
                                 findCmd->next=(findCmd->next)->next;
                             }
                             
@@ -437,19 +441,22 @@ void execute_command_unit(command_unit_t cmd)
                     
                     if((*findCmd).cmd_unit == cmd)//q_head is pointing to cmd
                     {
+#ifdef DEBUG
                         printf("!!!!!!!!!!!!!!!!!111111\n");
+#endif
                         trackers[i]->q_head = findCmd->next;
                     }
                     else
                     {
                         /////////////////////////////////////////////////可能有问题
+#ifdef DEBUG
                         printf("//////////////\n");
+#endif
                         do {
                             
                             struct cmd_queue *tmp = findCmd->next;
                             if(tmp->cmd_unit==cmd)
                             {
-                                printf("wtf");
                                 findCmd->next=(findCmd->next)->next;
                             }
                             
@@ -837,37 +844,6 @@ cmd_output_analysis(command_t c)
     
     return 0;
 }
-
-/*
- function analyze: tree searching
- 1)   Input
- 
- 2)   Output
- 
- 3)   Argument
- 
- 4)   Notice: every type of command can have input and output
- 
- 5)   Only simple command could have argument
- 
-*/
-
-/*
- Function execute_command_unit
- Mark the occupation of file
- Fork
- Child: Fork
- Grandchild： execute command_unit
- Child: wait
- For all related files
- Then clear the occupation
- Reduce occupy_counter of command on List Head
- Check occupy counter ==0?
- If yes
- Execute_command_unit(the command)
- If no
- Just pass
- */
 
 void
 execute_command (command_t c, int time_travel)

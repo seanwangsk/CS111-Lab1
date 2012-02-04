@@ -80,11 +80,13 @@ main (int argc, char **argv)
 	}
     }
     //dont know whether this is correct
-    while(command_number>0)
-    {
-        wait();
-        command_number--;
-    }
+    if(time_travel)
+        while(command_number>0)
+        {
+            wait();
+            command_number--;
+        }
 
   return print_tree || !last_command ? 0 : command_status (last_command);
+    
 }
