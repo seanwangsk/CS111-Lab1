@@ -560,6 +560,8 @@ check_file_block(command_unit_t cmd)
                 //dosomething;
                 cmd->block++;
 
+            //////////////////////////////////
+            
             
             add_cmd_into_queue(cmd,i);
         }
