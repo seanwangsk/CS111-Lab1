@@ -82,32 +82,41 @@ exec_cmd (command_t c){
 		if((p=fork())==0){ //child thread
 			dup2(pipefd[0],0);
 			close(pipefd[1]);
-			exit(exec_cmd(c->u.command[1]));
+			int result = exec_cmd(c->u.command[1]);
+			close(pipefd[0]);
+			close(0);
+			exit(1);
 		}
 		else if(p>0){	//father
-			//int a = dup(1);
-			dup2(pipefd[1],1);
-			close(pipefd[0]);
-			exec_cmd(c->u.command[0]);
-			close(pipefd[1]); //finish pipeing
-			close(1);
-			//dup2(a,1);		
-			int status;
-			if(wait(&status)>0){
-				if(WIFEXITED(status)){
-					return WEXITSTATUS(status);
-				}
-				else if(WIFSIGNALED(status)){
-					return WTERMSIG(status);
-				}
-				else{
-					perror("Command execution is interrupted\n");
-					return 0;
-				}
+			pid_t p2; 
+			if((p2=fork())==0){
+				dup2(pipefd[1],1);
+				close(pipefd[0]);
+				exec_cmd(c->u.command[0]);
+				close(pipefd[1]); //finish pipeing
+				close(1);
+				exit(1);
 			}
 			else{
-				perror("Cannot get pipeline return\n");
-				return 0;
+				close(pipefd[0]);
+				close(pipefd[1]);
+				int status;
+				if(waitpid(p2,&status,0)>0){
+					if(WIFEXITED(status)){
+						return WEXITSTATUS(status);
+					}
+					else if(WIFSIGNALED(status)){
+						return WTERMSIG(status);
+					}
+					else{
+						perror("Command execution is interrupted\n");
+						return 0;
+					}
+				}
+				else{
+					perror("Cannot get pipeline return\n");
+					return 0;
+				}
 			}
 		}
 		else{	//cannot create child process
@@ -140,7 +149,7 @@ exec_cmd (command_t c){
 		}
 
 		pid_t p;
-		if((p=fork())==0){ //child thread
+		if((p=fork())==0){
 			execvp(c->u.word[0],c->u.word);
 			perror("execvp"); //something wrong happen so this line is executed
 			return 0;
@@ -875,20 +884,12 @@ execute_command (command_t c, int time_travel)
   /* FIXME: Replace this with your implementation.  You may need to
      add auxiliary functions and otherwise modify the source code.
      You can also use external functions defined in the GNU C Library.  */
-	int a = dup(0);
-	int b = dup(1);
-	int cc = dup(2);
 	if(time_travel == 0){   //normal mode
-		fflush(stderr);
 		exec_cmd(c);	
 	}
     else                    //time travel mode
     {
         read_command(c);
     }
-    dup2(a,0);
-	dup2(b,1);
-	dup2(cc,2);
-	fflush(stderr);
     
 }
