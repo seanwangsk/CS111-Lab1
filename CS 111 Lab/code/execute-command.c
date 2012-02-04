@@ -549,6 +549,11 @@ void execute_command_unit(command_unit_t cmd)
 void
 check_file_block(command_unit_t cmd)
 {
+
+#ifdef DEBUG
+    printf("check file block for command unit:\n");
+    print_command(*(cmd->cmd));
+#endif
     //check if there is reading file block
     char **ptr = cmd->fileRead;
     while(*ptr)
@@ -565,12 +570,32 @@ check_file_block(command_unit_t cmd)
             perror("cannot find the file inside file tracker");
         else
         {
+            //see if there is a command writing to this file
             if(trackers[i]->writing > 0)
-                //dosomething;
                 cmd->block++;
 
-            //////////////////////////////////
             
+            //see if the cmd in the queue needs to write to the file
+            struct cmd_queue *queue_ptr = trackers[i]->q_head;
+            while(queue_ptr!=NULL)
+            {
+                printf("search for somebody needs to use \n");
+                char** file_ptr = (queue_ptr->cmd_unit)->fileWrite;
+                while(*file_ptr)
+                {
+                    if(queue_ptr->cmd_unit != cmd)
+                    {
+                        if(trackers[i]->fileName == (*file_ptr))
+                        {
+                            cmd->block++;
+                            break;
+                        }
+                    }
+                }
+                
+                queue_ptr = queue_ptr->next;
+            }
+                
             
             add_cmd_into_queue(cmd,i);
         }

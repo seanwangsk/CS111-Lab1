@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "command.h"
+#define DEBUG
 
 static char const *program_name;
 static char const *script_name;
@@ -74,7 +75,9 @@ main (int argc, char **argv)
 	}
       else
 	{
+#ifdef  DEBUG
         printf ("# %d\n", command_number++);
+#endif
 	  last_command = command;
 	  execute_command (command, time_travel);
 	}
