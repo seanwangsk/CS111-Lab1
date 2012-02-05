@@ -23,7 +23,10 @@ int isNormalChar(char);
 void init_buffer(char**, char**);
 void init_command_stream(command_stream_t*);
 void change_last_token(command_stream_t, char*);
-void add_token(command_stream_t, char*);
+void add_token(command_stream_t, char*,int);
+int isCombineToken(char* token);
+int is_first_prior(enum command_type type1, enum command_type type2);
+int get_command_type(char* token);
 
 //command_t parseSubshell(command_stream_t);
 //command_t parse_Command(command_stream_t, int);
@@ -50,10 +53,11 @@ make_command_stream (int (*get_next_byte) (void *),
   char cGet;
     do{
 	cGet =get_next_byte(get_next_byte_argument);
+	
 	if(state == IN_COMMENT){
 		if(cGet == '\n'){
 			state = NORMAL;
-			add_token(cmdStm,"\n");
+			add_token(cmdStm,"\n",1);
 			curLineNum++;
 		}
 	}
@@ -64,15 +68,15 @@ make_command_stream (int (*get_next_byte) (void *),
 	switch(cGet)
 		{
 			case '#': //step add_token(cmdStm,buffer);
-				add_token(cmdStm,buffer);
+				add_token(cmdStm,buffer,ptr-buffer);
 				init_buffer(&buffer,&ptr);
 				state = IN_COMMENT;
 				break;
 			case '&':
 				if(state == WAIT_FOR_AND){ //&&
-					add_token(cmdStm,buffer);
+					add_token(cmdStm,buffer,ptr-buffer);
 					init_buffer(&buffer,&ptr);
-					add_token(cmdStm,"&&");
+					add_token(cmdStm,"&&",2);
 					state = NORMAL;
 				}
 				else{
@@ -85,15 +89,15 @@ make_command_stream (int (*get_next_byte) (void *),
 					state = NORMAL;
 				}
 				else{
-					add_token(cmdStm,buffer);
+					add_token(cmdStm,buffer,ptr-buffer);
 					init_buffer(&buffer,&ptr);
-					add_token(cmdStm,"|");
+					add_token(cmdStm,"|",1);
 					state = WAIT_FOR_OR;
 				}
 				break;
 			case ' ':	//blank char
 			case '\t':
-				add_token(cmdStm,buffer);
+				add_token(cmdStm,buffer,ptr-buffer);
 				init_buffer(&buffer,&ptr);
 				state = NORMAL;
 				break;
@@ -106,12 +110,12 @@ make_command_stream (int (*get_next_byte) (void *),
 			case '(':
 			case ')':
 			case ';':
-				add_token(cmdStm,buffer);
+				add_token(cmdStm,buffer,ptr-buffer);
 				init_buffer(&buffer,&ptr);
 				char* tmp = checked_malloc(2*sizeof(char));
 				tmp[0] = cGet;
 				tmp[1] = '\0';
-				add_token(cmdStm,tmp); //also add themselves
+				add_token(cmdStm,tmp,1); //also add themselves
 				state = NORMAL;
 				break;
 			default: //normal word
@@ -158,6 +162,7 @@ isNormalChar(char c){
 void 
 init_buffer(char** buffer, char**ptr){
 	*buffer = checked_malloc(initsize*sizeof(char));
+	memset(*buffer,'\0',initsize*sizeof(char));
 	*ptr = *buffer;
 }
 
@@ -175,8 +180,8 @@ change_last_token(command_stream_t s,char* token){
 	s->tokens[s->ptrIndex-1] = token;
 }
 void 
-add_token(command_stream_t s, char* token){
-	if(strlen(token)>0){
+add_token(command_stream_t s, char* token, int length){
+	if(length>0){
 		s->tokens[s->ptrIndex] = token;
 		s->ptrIndex++;
 		if(s->ptrIndex >= (s->maxsize)/sizeof(char*)){
@@ -223,14 +228,14 @@ isCombineToken(char* token)
 {
 	return (isEqual(token,"|") ||
 		isEqual(token,"||") || 
-		isEqual(token,"&&") || 
-		isEqual(token,";"));
+		isEqual(token,"&&"));// || 
+		//isEqual(token,";"));
 }
 command_t push_command_buffer(command_t, char*);
 
 command_t parse_Command(command_stream_t, int);
 
-command_t complete_command(command_t, command_t);
+command_t complete_command(command_t, command_t*);
 
 command_t init_command(void);
 
@@ -275,9 +280,9 @@ parse_Command(command_stream_t s, int isSub)
         char* token = s->tokens[s->ptrIndex];
 	s->ptrIndex++;
 #ifdef Debug     
-        printf("#%d token is %s\n",s->curLineNum,token);
-        printf("i index = %d\n",s->ptrIndex);
-        printf("curOffset = %d\n",curOffset);
+        //printf("#%d token is %s\n",s->curLineNum,token);
+        //printf("i index = %d\n",s->ptrIndex);
+        //printf("curOffset = %d\n",curOffset);
 #endif
         
         if(isEqual(token,"\n")){
@@ -303,28 +308,35 @@ parse_Command(command_stream_t s, int isSub)
                         return curCmd;
                     }*/
 
-                    //curCmd = complete_command(curCmd,cmdBuffer);
+                    //curCmd = complete_command(curCmd,&cmdBuffer);
                     
                     state = SUBSHELL_FINISH;
                 }
-                else if(isEqual(token,")")&&(haveCmd!=0))//inside subshell and already have command in it
+                else if(isEqual(token,")"))
                 {
-                    curCmd = complete_command(curCmd,cmdBuffer);
+		    if(haveCmd!=0){//inside subshell and already have command in it
+                   	curCmd = complete_command(curCmd,&cmdBuffer);
 #ifdef Debug
-                    printf("returning from subshell from SIMPLE_INIT\n");
+                    	printf("returning from subshell from SIMPLE_INIT\n");
 #endif
-                    
-                    return curCmd; 
-                
+                    	return curCmd;
+		    }
+		    // else if ; is the end symbol
+                    else {
+                    	error(1,0,"error @ line %d\n, illegal symbol \")\"",s->curLineNum);
+		    }
+
                 }
                 else if(isEqual(token, "\n")){
-                    state = SIMPLE_INIT;	
+                    	state = SIMPLE_INIT;	
+		    //}
                 }
                 else if(isNormalToken(token)){
-		    if(haveCmd!=0){
-		    	curCmd = complete_command(curCmd,cmdBuffer);
+		    if(haveCmd!=0 && cmdBuffer == NULL){
+		    	curCmd = complete_command(curCmd,&cmdBuffer);
 			cmdBuffer = push_command_buffer(curCmd,";");
 			curCmd = init_command();
+			//haveCmd = 0;
 		    }
                     curCmd->u.word = checked_malloc(initsize*sizeof(char*));
                     curCmdWordMax = initsize * sizeof(char*);
@@ -343,24 +355,23 @@ parse_Command(command_stream_t s, int isSub)
 #endif
                 //XIA: for subshell
                 if((isEqual(token,")"))&&(isSub != 0)){
-                    
-                    curCmd = complete_command(curCmd,cmdBuffer);
+                    curCmd = complete_command(curCmd,&cmdBuffer);
 #ifdef Debug
                     printf("returning from subshell from SIMPLE_NO\n");
 #endif
-                    
                     return curCmd; 
                 }
-                else if(isEqual(token,"\n")){
+                else if(isEqual(token,"\n")||isEqual(token,";")){
                     //XIA: for subshell
                     if(isSub != 0){
                        //ignore \n
+			curCmd = complete_command(curCmd,&cmdBuffer);
 			state = SIMPLE_INIT;
 			haveCmd = 1;
                     }
                     else
                     {
-                        curCmd = complete_command(curCmd,cmdBuffer);
+                        curCmd = complete_command(curCmd,&cmdBuffer);
                         state = SIMPLE_INIT;
                         return curCmd;
                     }
@@ -387,7 +398,7 @@ parse_Command(command_stream_t s, int isSub)
 #ifdef Debug
                     printf("combining in SIMPLE_NO\n");
 #endif
-                    curCmd = complete_command(curCmd,cmdBuffer);
+                    curCmd = complete_command(curCmd,&cmdBuffer);
                     cmdBuffer = push_command_buffer(curCmd, token);
                     curCmd = init_command();
                     state = SIMPLE_INIT;
@@ -426,7 +437,7 @@ parse_Command(command_stream_t s, int isSub)
 #endif
                 if(isEqual(token,")"))
                 {
-                    curCmd = complete_command(curCmd,cmdBuffer);
+                    curCmd = complete_command(curCmd,&cmdBuffer);
 #ifdef Debug
                     printf("returning from subshell from SIMPLE_INPUT_FINISH\n");
 #endif
@@ -436,23 +447,23 @@ parse_Command(command_stream_t s, int isSub)
                 else if(isEqual(token,">")){
                     state = SIMPLE_OUTPUT;
                 }
-                else if(isEqual(token,"\n")){
+                else if(isEqual(token,"\n")||isEqual(token,";")){
                     //XIA: for subshell
                     if(isSub == 0 )
                     {
-                        curCmd = complete_command(curCmd,cmdBuffer);
+                        curCmd = complete_command(curCmd,&cmdBuffer);
                         return curCmd;
                         state = SIMPLE_INIT;
                     }
                     else // inside subshell
                     {
-                        curCmd = complete_command(curCmd,cmdBuffer);
+                        curCmd = complete_command(curCmd,&cmdBuffer);
                         state = SIMPLE_INIT;
                         haveCmd = 1;
                     }
                 }
                 else if(isCombineToken(token)){
-                    curCmd = complete_command(curCmd,cmdBuffer);
+                    curCmd = complete_command(curCmd,&cmdBuffer);
                     cmdBuffer = push_command_buffer(curCmd, token);			
                     curCmd = init_command();
                     state = SIMPLE_INIT;
@@ -478,30 +489,30 @@ parse_Command(command_stream_t s, int isSub)
 
                 if(isEqual(token,")"))
                 {
-                    curCmd = complete_command(curCmd,cmdBuffer);
+                    curCmd = complete_command(curCmd,&cmdBuffer);
 #ifdef Debug
                     printf("returning from subshell from SIMPLE_OUTPUT_FINISH\n");
 #endif
                     
                     return curCmd; 
                 }
-                else if(isEqual(token,"\n")){
+                else if(isEqual(token,"\n")||isEqual(token,";")){
                     if(isSub == 0)
                     {
-                        curCmd = complete_command(curCmd,cmdBuffer);
+                        curCmd = complete_command(curCmd,&cmdBuffer);
                         state = SIMPLE_INIT;
                         return curCmd;
                     }
                     else // inside subshell;
                     {
-                        //curCmd = complete_command(curCmd,cmdBuffer);
+                        curCmd = complete_command(curCmd,&cmdBuffer);
                         state = SIMPLE_INIT;
                         haveCmd = 1;
                     }
                         
                 }
                 else if(isCombineToken(token)){
-                    curCmd = complete_command(curCmd,cmdBuffer);
+                    curCmd = complete_command(curCmd,&cmdBuffer);
                     cmdBuffer = push_command_buffer(curCmd, token);                 
                     curCmd = init_command();
                     state = SIMPLE_INIT;
@@ -514,7 +525,7 @@ parse_Command(command_stream_t s, int isSub)
             case SUBSHELL_FINISH:
                 //XIA: for subshell inside a subshell
                 if((isEqual(token,")"))&&(isSub != 0)){                    
-                    curCmd = complete_command(curCmd,cmdBuffer);
+                    curCmd = complete_command(curCmd,&cmdBuffer);
                     state = SIMPLE_INIT;
                     return curCmd;                 
                 }
@@ -522,13 +533,13 @@ parse_Command(command_stream_t s, int isSub)
                     //XIA: for subshell // if inside subShell then take it as a sequence command
                     if(isSub != 0){
                         //ignore \n//need to implement sequence command here!!!!!!!!
-			curCmd = complete_command(curCmd,cmdBuffer);
+			curCmd = complete_command(curCmd,&cmdBuffer);
 			cmdBuffer = push_command_buffer(curCmd, ";");                 
                     	curCmd = init_command();
                     }
                     else//if not insdie subShell then return
                     {
-                        curCmd = complete_command(curCmd,cmdBuffer);
+                        curCmd = complete_command(curCmd,&cmdBuffer);
                         state = SIMPLE_INIT;
                         return curCmd;
                     }
@@ -543,13 +554,13 @@ parse_Command(command_stream_t s, int isSub)
 #ifdef Debug
                     printf("combining for subshell\n");
 #endif
-                    //curCmd = complete_command(curCmd,cmdBuffer);
+                    curCmd = complete_command(curCmd,&cmdBuffer);
                     cmdBuffer = push_command_buffer(curCmd, token);
                     curCmd = init_command();
                     state = SIMPLE_INIT;
                 }
                 else if(s->ptrIndex >= s->size - 1){
-                    curCmd = complete_command(curCmd,cmdBuffer);
+                    curCmd = complete_command(curCmd,&cmdBuffer);
 #ifdef Debug
                     printf("returning from subshell from subshell_finish when the pointing to the last token\n");
 #endif
@@ -578,20 +589,20 @@ parse_Command(command_stream_t s, int isSub)
 		state == SUBSHELL_FINISH
 		))
 	    {
-	    	curCmd = complete_command(curCmd,cmdBuffer);
+	    	curCmd = complete_command(curCmd,&cmdBuffer);
 		return curCmd;
 	    }
 	    else if(state == SIMPLE_INIT){
 	    	if(cmdBuffer!=NULL){ //combine situation
-			if(cmdBuffer->type == SEQUENCE_COMMAND){	//single command;
-				curCmd = cmdBuffer->u.command[0];
-				free(cmdBuffer);
-				return curCmd;
-			}
-			else
-			{
+		//	if(cmdBuffer->type == SEQUENCE_COMMAND){	//single command;
+		//		curCmd = cmdBuffer->u.command[0];
+		//		free(cmdBuffer);
+		//		return curCmd;
+		//	}
+		//	else
+		//	{
 	    			error(1,0,"error @ line %d, incomplete script\n",s->curLineNum);
-			}
+			
 		}
 		else{
 			return 0;	
@@ -609,27 +620,28 @@ parse_Command(command_stream_t s, int isSub)
 
 
 command_t
-complete_command(command_t curCmd, command_t cmdBuffer){
+complete_command(command_t curCmd, command_t *cmdBuffer){
 	command_t cmd_finished = curCmd;	
-	if(cmdBuffer != NULL){
-                        cmdBuffer->u.command[1] = curCmd;
-			command_t cmdBef = cmdBuffer->u.command[0];
+	if(*cmdBuffer != NULL){
+                        (*cmdBuffer)->u.command[1] = curCmd;
+			command_t cmdBef = (*cmdBuffer)->u.command[0];
 			if(cmdBef->type != SIMPLE_COMMAND && cmdBef->type != SUBSHELL_COMMAND)	
 			{
-				if(is_first_prior(cmdBuffer->type, cmdBef->type)){
+				if(is_first_prior((*cmdBuffer)->type, cmdBef->type)){
 					//adjust structure
-					cmdBuffer->u.command[0] = cmdBef->u.command[1];
-					cmdBef->u.command[1] = cmdBuffer;
+					(*cmdBuffer)->u.command[0] = cmdBef->u.command[1];
+					cmdBef->u.command[1] = *cmdBuffer;
 					cmd_finished = cmdBef;
 				}
 				else{
-					cmd_finished = cmdBuffer;
+					cmd_finished = *cmdBuffer;
 				}
 			}
 			else{
-                        	cmd_finished = cmdBuffer;
+                        	cmd_finished = *cmdBuffer;
 			}
         }
+	*cmdBuffer = NULL;
 	return cmd_finished;
 }
 
@@ -637,6 +649,9 @@ command_t
 init_command(void){
 	command_t cmd = checked_malloc(sizeof(struct command));
         cmd->type = SIMPLE_COMMAND;
+	cmd->status = -1;
+	cmd->input = 0;
+	cmd->output = 0;
 	return cmd;
 }
 
@@ -673,5 +688,11 @@ int is_first_prior(enum command_type type1, enum command_type type2){
 command_t
 read_command_stream (command_stream_t s)
 { 
-    return parse_Command(s, 0);
+	/*command_t ss = parse_Command(s,0);
+	printf("%d type\n",SIMPLE_COMMAND);
+	command_t aa = ss->u.subshell_command;
+	printf("root is %d, left is %d, right is %d\n",aa->type,aa->u.command[0]->type, aa->u.command[1]->type);
+	printf("right is $s",aa->u.command[1]->u.word[0]);
+	printf("left left is %s and %s\n",aa->u.command[0]->u.command[0]->u.word[0],aa->u.command[0]->u.command[1]->u.word[0]);
+    //*/return parse_Command(s, 0);
 }

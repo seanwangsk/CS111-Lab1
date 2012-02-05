@@ -1,0 +1,13 @@
+This code is written by Zhiyang Wang 303991529 and Minhan Xia 204000665
+Lab1a
+Finished all stuff for Lab1a including subshell function. And also, for
+(
+  a
+  b
+)
+it will be parsed as (a;b)
+
+Lab1b
+Finished all stuff for Lab1b. The command will be executed almost in the same way as bash. One exception is when using a inexisting file as input file or output file, in bash it will not only report error but also throw out the line number of the script. But due to the existing design of main.c, after reading the whole script, the input of execute_command is command_t, which no longer contains line number information, we could not tell line number here.
+
+In our design, system level error such as failing to fork a new process to conduct one simple command will print an error message and skip the execution of current command, but won't stop the whole script 

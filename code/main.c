@@ -4,11 +4,17 @@
 #include <error.h>
 #include <getopt.h>
 #include <stdio.h>
+#include <sys/wait.h>
 
 #include "command.h"
+//#define DEBUG
 
 static char const *program_name;
 static char const *script_name;
+
+file_tracker_t *trackers;
+int tracker_index = 0;
+size_t tracker_size = 0;
 
 static void
 usage (void)
@@ -54,6 +60,13 @@ main (int argc, char **argv)
 
   command_t last_command = NULL;
   command_t command;
+    
+    
+  //initialize the file trackers  
+    trackers = NULL;
+    tracker_index = 0;
+    tracker_size = 0;
+    
   while ((command = read_command_stream (command_stream)))
     {
       if (print_tree)
@@ -63,10 +76,17 @@ main (int argc, char **argv)
 	}
       else
 	{
+#ifdef  DEBUG
+        printf ("# %d\n", command_number++);
+#endif
 	  last_command = command;
 	  execute_command (command, time_travel);
 	}
     }
+  if(time_travel){
+	execute_command_list();
+  }
 
   return print_tree || !last_command ? 0 : command_status (last_command);
+    
 }

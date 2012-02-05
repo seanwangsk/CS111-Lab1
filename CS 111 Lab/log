@@ -1,5 +1,0 @@
-Log
-Jan 14: by Zhiyang
-1. modified alloc.c, change the Max in checked_grow from -1 to 10000
-2. modified read_command, implement the make_command function
-3. modifide command_internal, add struct command_stream 
