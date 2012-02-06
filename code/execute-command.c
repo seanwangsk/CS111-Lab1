@@ -261,8 +261,8 @@ void release_command_occupation(command_unit_t cmd){
 		if(curFile.op_type == 1) //if curfile is write
 		{
 		        int i = findTrackerIndex(curFile.name);			
-			assert(trackers[i]->writing==1);
-			assert(trackers[i]->reading==0);
+			//assert(trackers[i]->writing==1);
+			//assert(trackers[i]->reading==0);
 			trackers[i]->writing--;
 		        //find the next command unit in the queue. see if it is block by writing
 			while(trackers[i]->q_head !=NULL && trackers[i]->q_head->cmd_unit->block==0){
@@ -327,7 +327,7 @@ void release_command_occupation(command_unit_t cmd){
 					
 					//printf("for file %s\n",trackers[i]->fileName);
 					//printf("%d in queue\n",trackers[i]->q_head->cmdNum);
-					assert(trackers[i]->q_head->type == 1);
+					//assert(trackers[i]->q_head->type == 1);
 					trackers[i]->q_head->cmd_unit->block--;  //must be a writing command
 					if(trackers[i]->q_head->cmd_unit->block==0){
 						trackers[i]->q_head = trackers[i]->q_head->next;
