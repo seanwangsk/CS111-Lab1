@@ -33,7 +33,7 @@ It's our second design. In our first design, we try to merge 2 steps into one th
 
 
 Test Report for Lab 1c
-
+(test file in folder Testcases)
 Here we conduct three sets of tests. In Test 1, multiple commands read from multiple files. There is no dependency with each other. All commands are expected to execute parallel. The results show that all the commands begin to execute at the same time. All the execution time is as expected.  However, the terminal output may not be the same as sequential execution. 
 
 In test 2, multiple commands read and write to multiple files. Each file may only be written once. There may be multiple file dependency among the commands. The results show that the execution sequence is correct.  In other words, commands are executed by batch as expected. The batch sequence is correct. In each batch, commands are executed parallel.  However, the output sequence within each batch may not be correct. This coincides with the result from Test 1.
