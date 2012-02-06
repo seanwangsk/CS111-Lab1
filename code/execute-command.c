@@ -88,9 +88,7 @@ exec_cmd (command_t c){
 		return (exec_cmd(c->u.command[0]) && exec_cmd(c->u.command[1]));		
 	}
 	else if(c->type == OR_COMMAND){
-		int r1 = exec_cmd(c->u.command[0]);
-		int r2 = exec_cmd(c->u.command[1]);
-		return r1||r2 ;
+		return  exec_cmd(c->u.command[0]) || exec_cmd(c->u.command[1]);
 	}
 	else if(c->type == SEQUENCE_COMMAND){
 		exec_cmd(c->u.command[0]);

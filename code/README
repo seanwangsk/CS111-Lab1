@@ -17,5 +17,17 @@ In Lab1c, we define a data struct call command_unit. Command_unit represents a c
 
 Also, we defined file_tracker which tracks each file in the script. 
 
-In our design, we first analyze the file dependency of each command_unit. If a command_unit is blocked, then it is added to the command queue inside of the file_tracker. If the command_unit is not blocked, then the command_unit gets executed. When the commmand_unit is executing, it mark all the files that it is needed. 
+For time travel mode, the execution is seperated into two steps.
+
+Step1:
+First analyze the file dependency of all command_unit. If a command_unit is blocked, then it is added to the command queue inside of the file_tracker. If the command_unit is not blocked, then the command_unit's block flag should be 0. During this step, all command_unit will also be added into a list.
+
+Step2:
+Iteratively scan the command list for command that block counter is 0. Execute them with seperated process. After one command is executed, it will be removed from the command list for all files it used, adjust the commands in the file's blocked list, including modify their block counters and remove them from the files blocked list if the counter now is 0 (means they will no longer wait). And for the next iteration, such commands with block counter now as 0 will be executed.
+
+Iteration will finsih when all commands are removed from the command list.
+
+Notice:
+It's our second design. In our first design, we try to merge 2 steps into one that after analyzing the dependency, one command will immediately execute and after executed, it will scan file's blocked list and call other command by itself. But we abandon such design later because it's difficult to share the file status (including blocked list) among child processes. So we have to modify file blocked list in centralized main process. 
+
 
