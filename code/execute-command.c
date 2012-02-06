@@ -15,7 +15,7 @@
 #include <assert.h>
 #define initsize 100
 
-#define DEBUG
+//#define DEBUG
 
 extern file_tracker_t *trackers;
 extern unsigned int tracker_index;           //the next empty slot for file trackers
@@ -116,7 +116,6 @@ exec_cmd (command_t c){
 				exec_cmd(c->u.command[0]);
 				close(pipefd[1]); //finish pipeing
 			//	close(1);
-				printf("lalala");
 				exit(1);
 			}
 			else{
@@ -224,17 +223,24 @@ analyze_command(command_t c)
 
     unsigned int i;
     for(i=0;i<tracker_index;i++){
+#ifdef DEBUG
 	printf("name is %s, ",trackers[i]->fileName);
 	printf("reading is %d, writing is %d, ", trackers[i]->reading, trackers[i]->writing);
+#endif
 	cmd_queue_t ptr = trackers[i]->q_head; 	
 	while(ptr!=NULL){
+#ifdef DEBUG
 		printf("blocked command is %d, ",ptr->cmdNum);
+#endif
 		ptr = ptr->next;
 	}
+#ifdef DEBUG
 	printf("\n");
+#endif
     }
+#ifdef DEBUG
     printf("=================================\n");
-        
+#endif        
     return cur_command_unit;
 }
 
@@ -352,7 +358,9 @@ check_file_block(command_unit_t cmd)
 		int i = findTrackerIndex(cmd->dependFiles->array[j].name);
 		if(trackers[i]->writing > 0 || trackers[i]->reading > 0){
 		    cmd->block++;
+#ifdef DEBUG
 		    printf("command %d, for %s, writing blocked\n",lineNum,trackers[i]->fileName);
+#endif
 	       	    add_cmd_into_queue(cmd,i,1);
 		}
 		else{
@@ -367,7 +375,9 @@ check_file_block(command_unit_t cmd)
 		int cannotRead = 0;
 		
 		if(trackers[i]->writing > 0){
+#ifdef DEBUG
 		    printf("command %d, for %s, reading blocked because writing\n",lineNum,trackers[i]->fileName);
+#endif
 		    cmd->block++;
 		    cannotRead =1;
 		}
@@ -378,7 +388,9 @@ check_file_block(command_unit_t cmd)
 		    while(queue_ptr!=NULL)
 		    {
 		        if(queue_ptr->type==1){
+#ifdef DEBUG
 				printf("command %d, for %s, reading blocked because in queue writing\n",lineNum,trackers[i]->fileName);
+#endif
 				cmd->block++;
 				cannotRead =1;
 				break;
@@ -455,7 +467,9 @@ add_file_to_tracker(file_array_t files)
     int i;
     for(i=0;i<files->size;i++)
     {
+#ifdef DEBUG
 	printf("in add_file_to_tracker, file is %s\n", files->array[i].name);
+#endif
 	int dup = 0;
         unsigned int j = 0;
         for(j=0;j<tracker_index;j++)
@@ -603,7 +617,9 @@ execute_command_list(){
 		cmd_queue_t queue_ptr = cmds_to_exec;
 		while(queue_ptr!=NULL){
 			if(queue_ptr->cmd_unit->block==0 && queue_ptr->pid==0/*not current running*/){
+#ifdef DEBUG
 				printf("cmd %d is running\n",queue_ptr->cmdNum);				
+#endif
 				mark_files(queue_ptr->cmd_unit);
 				pid_t pid;
 				if((pid=fork())==0){	//child
@@ -626,7 +642,9 @@ execute_command_list(){
 		cmd_queue_t queue_ptr_before = NULL;	//the previous node for queue_ptr, used to delete node from queue
 		while(queue_ptr!=NULL){
 			if(queue_ptr->pid==ret_pid){
+#ifdef DEBUG
 				printf("%d is releasing\n",queue_ptr->cmdNum);
+#endif
 				release_command_occupation(queue_ptr->cmd_unit);
 				//release node from linked list
 				if(queue_ptr_before==NULL){	//the node is the head
@@ -642,6 +660,8 @@ execute_command_list(){
 			queue_ptr_before = queue_ptr; //store the current location in before pointer
 			queue_ptr=queue_ptr->next;	//move to the next
 		}
+#ifdef DEBUG
 		printf("finished\n");
+#endif
 	}
 }
