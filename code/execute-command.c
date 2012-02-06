@@ -287,22 +287,28 @@ void release_command_occupation(command_unit_t cmd){
 				}
 			    }
 			    else{
-				
 				read_before=1;
-				cmdWait->cmd_unit->block--;		
+				cmdWait->cmd_unit->block--;	
 				if(cmdWait->cmd_unit->block==0){
 					if(cmdWait_before==NULL){
+						printf("1unlocking reading %d\n",cmdWait->cmdNum);
 						assert(cmdWait == trackers[i]->q_head);	
 						trackers[i]->q_head = cmdWait->next;
 					}
 					else{
-						cmdWait_before->next = cmdWait->next;	
+						printf("2unlocking reading %d\n",cmdWait->cmdNum);
+						assert(cmdWait!=cmdWait_before);
+						cmdWait_before->next = cmdWait->next;
 					}					
 				}
+				else{
+					cmdWait_before = cmdWait;
+				}
+		            	cmdWait=cmdWait->next;
 			    }
-			    cmdWait_before = cmdWait;
-		            cmdWait=cmdWait->next;
 		        }
+
+			assert(trackers[i]->q_head ==NULL);
 		}
 		else{ //Read
 			int i = findTrackerIndex((curFile.name));   
@@ -310,8 +316,10 @@ void release_command_occupation(command_unit_t cmd){
 			trackers[i]->reading--;
 			//might be multi read
 			if(trackers[i]->reading==0){     
-				//assumption: for the file being read, the first one of the queue must be a write
-				if(trackers[i]->q_head !=NULL){	
+					//assumption: for the file being read, the first one of the queue must be a write
+					if(trackers[i]->q_head !=NULL){	
+					printf("for file %s\n",trackers[i]->fileName);
+					printf("%d in queue\n",trackers[i]->q_head->cmdNum);
 					assert(trackers[i]->q_head->type == 1);
 					trackers[i]->q_head->cmd_unit->block--;  //must be a writing command
 					if(trackers[i]->q_head->cmd_unit->block==0){
@@ -611,6 +619,7 @@ execute_command_list(){
 		cmd_queue_t queue_ptr_before = NULL;	//the previous node for queue_ptr, used to delete node from queue
 		while(queue_ptr!=NULL){
 			if(queue_ptr->pid==ret_pid){
+				printf("%d is releasing\n",queue_ptr->cmdNum);
 				release_command_occupation(queue_ptr->cmd_unit);
 				//release node from linked list
 				if(queue_ptr_before==NULL){	//the node is the head
