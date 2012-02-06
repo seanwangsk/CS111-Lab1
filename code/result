@@ -1,0 +1,53 @@
+hi
+hi
+line 1
+line 2
+hi
+hi
+line 3
+in add_file_to_tracker, file is a
+in add_file_to_tracker, file is b
+in add_file_to_tracker, file is line
+in add_file_to_tracker, file is 1
+name is a, reading is 1, writing is 0, 
+name is b, reading is 1, writing is 0, 
+name is line, reading is 1, writing is 0, 
+name is 1, reading is 1, writing is 0, 
+=================================
+in add_file_to_tracker, file is a
+in add_file_to_tracker, file is hi
+in add_file_to_tracker, file is b
+in add_file_to_tracker, file is line
+in add_file_to_tracker, file is 2
+command 2, for a, writing blocked
+command 2, for b, writing blocked
+name is a, reading is 1, writing is 0, blocked command is 2, 
+name is b, reading is 1, writing is 0, blocked command is 2, 
+name is line, reading is 2, writing is 0, 
+name is 1, reading is 1, writing is 0, 
+name is hi, reading is 1, writing is 0, 
+name is 2, reading is 1, writing is 0, 
+=================================
+in add_file_to_tracker, file is a
+in add_file_to_tracker, file is b
+in add_file_to_tracker, file is line
+in add_file_to_tracker, file is 3
+command 3, for a, reading blocked because in queue writing
+command 3, for b, reading blocked because in queue writing
+name is a, reading is 1, writing is 0, blocked command is 2, blocked command is 3, 
+name is b, reading is 1, writing is 0, blocked command is 2, blocked command is 3, 
+name is line, reading is 3, writing is 0, 
+name is 1, reading is 1, writing is 0, 
+name is hi, reading is 1, writing is 0, 
+name is 2, reading is 1, writing is 0, 
+name is 3, reading is 1, writing is 0, 
+=================================
+cmd 1 is running
+1 is releasing
+finished
+cmd 2 is running
+2 is releasing
+finished
+cmd 3 is running
+3 is releasing
+finished

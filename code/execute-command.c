@@ -267,12 +267,15 @@ void release_command_occupation(command_unit_t cmd){
 			assert(trackers[i]->reading==0);
 			trackers[i]->writing--;
 		        //find the next command unit in the queue. see if it is block by writing
-		        cmd_queue_t cmdWait = trackers[i]->q_head;
+			while(trackers[i]->q_head !=NULL && trackers[i]->q_head->cmd_unit->block==0){
+				trackers[i]->q_head = trackers[i]->q_head->next;
+			}
+			cmd_queue_t cmdWait = trackers[i]->q_head;
 		        cmd_queue_t cmdWait_before = NULL;
 			int read_before = 0;
 		        while(cmdWait!=NULL)
 		        {   	
-			    
+			    //printf("for %s, for %d, op type %d\n",curFile.name,cmdWait->cmdNum, cmdWait->type);
 			    if(cmdWait->type == 1){	//the next command is write
 				if(read_before){	//there's read command before in the queue, so we are still blocked
 					break;
@@ -289,14 +292,16 @@ void release_command_occupation(command_unit_t cmd){
 			    else{
 				read_before=1;
 				cmdWait->cmd_unit->block--;	
+				
+				//printf("for %s, block-- for %d, now is %d\n",curFile.name,cmdWait->cmdNum, cmdWait->cmd_unit->block);
 				if(cmdWait->cmd_unit->block==0){
 					if(cmdWait_before==NULL){
-						printf("1unlocking reading %d\n",cmdWait->cmdNum);
+						//printf("1unlocking reading %d\n",cmdWait->cmdNum);
 						assert(cmdWait == trackers[i]->q_head);	
 						trackers[i]->q_head = cmdWait->next;
 					}
 					else{
-						printf("2unlocking reading %d\n",cmdWait->cmdNum);
+						//printf("2unlocking reading %d\n",cmdWait->cmdNum);
 						assert(cmdWait!=cmdWait_before);
 						cmdWait_before->next = cmdWait->next;
 					}					
@@ -309,15 +314,21 @@ void release_command_occupation(command_unit_t cmd){
 		        }
 		}
 		else{ //Read
+			
 			int i = findTrackerIndex((curFile.name));   
 			assert(trackers[i]->writing == 0);
 			trackers[i]->reading--;
 			//might be multi read
 			if(trackers[i]->reading==0){     
-					//assumption: for the file being read, the first one of the queue must be a write
-					if(trackers[i]->q_head !=NULL){	
-					printf("for file %s\n",trackers[i]->fileName);
-					printf("%d in queue\n",trackers[i]->q_head->cmdNum);
+				while(trackers[i]->q_head !=NULL && trackers[i]->q_head->cmd_unit->block==0){
+						trackers[i]->q_head = trackers[i]->q_head->next;
+				}
+
+				//assumption: for the file being read, the first one of the queue must be a write
+				if(trackers[i]->q_head !=NULL){	
+					
+					//printf("for file %s\n",trackers[i]->fileName);
+					//printf("%d in queue\n",trackers[i]->q_head->cmdNum);
 					assert(trackers[i]->q_head->type == 1);
 					trackers[i]->q_head->cmd_unit->block--;  //must be a writing command
 					if(trackers[i]->q_head->cmd_unit->block==0){
