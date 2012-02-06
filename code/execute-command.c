@@ -307,8 +307,6 @@ void release_command_occupation(command_unit_t cmd){
 		            	cmdWait=cmdWait->next;
 			    }
 		        }
-
-			assert(trackers[i]->q_head ==NULL);
 		}
 		else{ //Read
 			int i = findTrackerIndex((curFile.name));   
