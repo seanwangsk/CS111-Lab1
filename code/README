@@ -31,3 +31,13 @@ Notice:
 It's our second design. In our first design, we try to merge 2 steps into one that after analyzing the dependency, one command will immediately execute and after executed, it will scan file's blocked list and call other command by itself. But we abandon such design later because it's difficult to share the file status (including blocked list) among child processes. So we have to modify file blocked list in centralized main process. 
 
 
+
+Test Report for Lab 1c
+(test file in folder Testcases)
+Here we conduct three sets of tests. In Test 1, multiple commands read from multiple files. There is no dependency with each other. All commands are expected to execute parallel. The results show that all the commands begin to execute at the same time. All the execution time is as expected.  However, the terminal output may not be the same as sequential execution. 
+
+In test 2, multiple commands read and write to multiple files. Each file may only be written once. There may be multiple file dependency among the commands. The results show that the execution sequence is correct.  In other words, commands are executed by batch as expected. The batch sequence is correct. In each batch, commands are executed parallel.  However, the output sequence within each batch may not be correct. This coincides with the result from Test 1.
+
+In test 3, multiple commands read and write to multiple files. Each file may be written multiple times. There are complicated read and write dependency among the commands. The results show that the batch execution sequence is correct. Still, inside each batch, terminal output may not be correct.
+
+In the Testcases folder, are the test cases we use.
