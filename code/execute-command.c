@@ -30,18 +30,10 @@ void cmd_file_analysis(command_t, file_array_t);
 command_unit_t analyze_command(command_t c);
 int isEqual(char* a, char* b);
 void add_tracker(char *new);
-void add_file_to_tracker(file_array_t);
-int check_input_file_block(char **files);
-int check_output_file_block(char **files);
 void add_cmd_into_queue(command_unit_t cmd, int index, int op_type);
 void check_file_block(command_unit_t cmd);
 void execute_command_unit(command_unit_t cmd);
-void check_file_block_withoutadd(command_unit_t cmd);
-void block_wirte_file(command_unit_t cmd);
-void block_read_file(command_unit_t cmd);
 int findTrackerIndex(char *ptr);
-void release_read_file(command_unit_t cmd);
-void release_write_file(command_unit_t cmd);
 void execute_command_list(void);
 
 
@@ -576,23 +568,17 @@ add_to_cmds_to_exec(command_unit_t cmd_u){
 	}
 }
 
-
-
 void
 execute_command (command_t c, int time_travel)
 {
-  /* FIXME: Replace this with your implementation.  You may need to
-     add auxiliary functions and otherwise modify the source code.
-     You can also use external functions defined in the GNU C Library.  */
-	if(time_travel == 0){   //normal mode
-		exec_cmd(c);	
-	}
+    if(time_travel == 0){   //normal mode
+	exec_cmd(c);	
+    }
     else                    //time travel mode
     {   
 	//SK:analyze the command and return command unit
 	//Modify the name "read_command" to "analyze_command". avoiding bias with read-command.c
 	//Will return the command_unit_t;
-	
         command_unit_t cmd_u = analyze_command(c);
 	//add the command into whole commands queue
 	add_to_cmds_to_exec(cmd_u);	

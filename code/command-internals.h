@@ -1,5 +1,10 @@
 // UCLA CS 111 Lab 1 command internals
 #include <stdlib.h>
+typedef struct command_unit *command_unit_t; 
+typedef struct file_tracker *file_tracker_t;
+typedef struct cmd_queue* cmd_queue_t;
+typedef struct file* file_t;
+typedef struct file_array* file_array_t;
 
 enum command_type
   {
@@ -47,5 +52,41 @@ struct command_stream
 	int curLineNum;
 };
 
+
+struct file
+{
+	char* name;
+	int op_type;//0 for read, 1 for write
+};
+
+struct file_array{
+	file_t array;
+	int size;
+};
+
+struct command_unit
+{
+    command_t cmd;
+    int block;                  //indicate how many files are still blocking
+    file_array_t dependFiles;
+};
+
+
+struct file_tracker
+{
+    char* fileName;
+    int writing;               //indicate how many command are reading or writing this file
+    int reading;   
+    struct cmd_queue *q_head;
+};
+
+struct cmd_queue
+{
+    command_unit_t cmd_unit;
+    pid_t pid;
+    int cmdNum;
+    int type; //0-read 1-write
+    struct cmd_queue *next;
+};
 
 
