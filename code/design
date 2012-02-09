@@ -1,0 +1,76 @@
+0. change the command structure
+	1) for simple command: 
+		arg:	option
+			option's file
+			position file
+			not a file (only recoginzed one will in this status)
+	2) add args_file_queue
+		args_file:
+			file
+			position_start
+			position_end
+			op
+			type (read/write/?) //assume read&write = write
+	3) when in execute-command.c analyzing, it will only read the args_file_queue, rather than words[]
+
+parse:
+-aa-a == -a -a --a
+
+
+in database:
+	id, op, require_arg(0,1,2(unknown)), read/write (not null)
+
+ASSUMPTION; position operation will never change
+ASSUMPTION: not consider -af where f is actually a file
+		for -af, then parse to -a -f, with -f could follow a file 
+
+NOT consider not-required
+
+1. change the read command 
+	1) add a switch to turn on/off the arg analyze 
+	2) for simple command:
+
+ _w_	_op_	
+\| |   \|  |
+(main)->(op)
+ /|__w__|
+		main -> main (W)
+		 op  -> main (W) if recogize no_arg 
+			get current position
+			analyze the position using database
+			recognize?
+				y: create args_file, with type as according (or not modify the args_file))
+				n: create args_file, with type as unknown 	
+		 op  -> op 
+			recognize?
+				y: do nothing (may change to relearn)
+				n: put into database for op that take no argumetn		 op -> main (W) if not recognize or recognize require_arg
+			recognize?
+				y: create args_file, with op as according
+				n: create args_file, with op as unknown
+ASSUMPTION:
+	after doing this, all args file are in the args_file_queue even if not recognized
+
+ASSUMPTION:
+	no path complete (cmd file => /particular_path/file)
+
+2. In time travel execute analyze:
+	just read args_file rather than words
+	if unknown, treat as write (notice)
+
+3. In exec_cmd (SIMPLE COMMAND)
+	1)track open syscall
+	2)compare with args_file_queue
+		if not find (should we deal with hidden file?)
+		if find 
+			if unknown, update database
+			if known, check 
+				if not accord, do complex stuff
+
+leaving re-learning problem 
+if we assume one command won't have "not_required"
+so if error happens, it must be that such file is actually a position file, so:
+error happen:
+	file that belong to one op is operated in different way(so we still need to specify)
+	all position after should be +1
+

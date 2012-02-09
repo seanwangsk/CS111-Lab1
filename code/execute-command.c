@@ -141,7 +141,6 @@ exec_cmd (command_t c){
 		return exec_cmd(c->u.subshell_command);
 	}
 	else if(c->type == SIMPLE_COMMAND){
-		
 		pid_t p;
 		if((p=fork())==0){
 			//the end of words should be NULL
@@ -172,6 +171,7 @@ exec_cmd (command_t c){
 			int pid = wait(&status);
 			if(pid>0){
 				if(WIFEXITED(status)){
+					//[New] add analysis here
 					return !WEXITSTATUS(status);
 				}
 				else if(WIFSIGNALED(status)){

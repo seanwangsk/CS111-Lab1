@@ -8,6 +8,7 @@
 #include "alloc.h"
 #include <string.h>
 #include <ctype.h>
+#include <assert.h>
 #define initsize 100//some problem
 
 //#define Debug 0 //for Debug printf
@@ -192,7 +193,7 @@ add_token(command_stream_t s, char* token, int length){
 	}
 }
 
-
+//============ command parse ==========
 
 enum command_state{
 	SIMPLE_INIT,
@@ -202,6 +203,11 @@ enum command_state{
 	SIMPLE_OUTPUT,
 	SIMPLE_OUTPUT_FINISH,
     SUBSHELL_FINISH,
+};
+
+enum arg_state{
+	MAIN,
+	OPTION
 };
 
 int 
@@ -274,7 +280,10 @@ parse_Command(command_stream_t s, int isSub)
     
     
     enum command_state state = SIMPLE_INIT;   
-    
+    //SK: for argument parsing
+    enum arg_state argState = MAIN;
+    option_t lastOption = NULL;
+	int argPos = 0;
     
     while(s->ptrIndex < s->size){
         char* token = s->tokens[s->ptrIndex];
@@ -299,32 +308,21 @@ parse_Command(command_stream_t s, int isSub)
 #ifdef Debug  
                     print_command(curCmd);
 #endif
-                    /*if(i == s->size) // if ")" is the last token of the script  then return curCmd directly;
-                    {
-                        if(cmdBuffer != NULL){
-                            cmdBuffer->u.command[1] = curCmd;
-                            curCmd = cmdBuffer;
-                        }
-                        return curCmd;
-                    }*/
-
-                    //curCmd = complete_command(curCmd,&cmdBuffer);
-                    
                     state = SUBSHELL_FINISH;
                 }
                 else if(isEqual(token,")"))
                 {
-		    if(haveCmd!=0){//inside subshell and already have command in it
-                   	curCmd = complete_command(curCmd,&cmdBuffer);
+					if(haveCmd!=0){//inside subshell and already have command in it
+							curCmd = complete_command(curCmd,&cmdBuffer);
 #ifdef Debug
-                    	printf("returning from subshell from SIMPLE_INIT\n");
+								printf("returning from subshell from SIMPLE_INIT\n");
 #endif
-                    	return curCmd;
-		    }
-		    // else if ; is the end symbol
-                    else {
-                    	error(1,0,"error @ line %d\n, illegal symbol \")\"",s->curLineNum);
-		    }
+								return curCmd;
+					}
+					// else if ; is the end symbol
+							else {
+								error(1,0,"error @ line %d\n, illegal symbol \")\"",s->curLineNum);
+					}
 
                 }
                 else if(isEqual(token, "\n")){
@@ -332,17 +330,20 @@ parse_Command(command_stream_t s, int isSub)
 		    //}
                 }
                 else if(isNormalToken(token)){
-		    if(haveCmd!=0 && cmdBuffer == NULL){
-		    	curCmd = complete_command(curCmd,&cmdBuffer);
-			cmdBuffer = push_command_buffer(curCmd,";");
-			curCmd = init_command();
-			//haveCmd = 0;
-		    }
+					if(haveCmd!=0 && cmdBuffer == NULL){
+						curCmd = complete_command(curCmd,&cmdBuffer);
+					cmdBuffer = push_command_buffer(curCmd,";");
+					curCmd = init_command();
+					//haveCmd = 0;
+					}
                     curCmd->u.word = checked_malloc(initsize*sizeof(char*));
                     curCmdWordMax = initsize * sizeof(char*);
                     curCmd->u.word[0] = token;
-		    curCmd->u.word[1] = NULL;
+					curCmd->u.word[1] = NULL;
                     curCmdWordIndex = 1; 
+					argState = MAIN;
+					argPos = 0;
+					lastOption = NULL;t
                     state = SIMPLE_NO;
                 }
                 else{
@@ -386,6 +387,45 @@ parse_Command(command_stream_t s, int isSub)
 #ifdef Debug                
                     printf("normal word in SIMPLE_NO\n");
 #endif
+					//SK: Add argument analysis here
+					assert(curCmdWordIndex>0)//the first one is the application name, not an argument
+					
+					if(token[0]=='-'){
+						if(argState == OPTION){
+							//the last option should be treated differently
+						}
+						argState = OPTION;
+						char* c_ptr = ++token;
+						char* c_before = NULL;
+						while(*c_ptr && *c_ptr!='-'){	//single - 
+							if(c_before!=NULL){ //such token takes no args
+							  //if cognized, contradict to database?
+							  //else
+							  //insert  id,c_before,0,0
+							}
+							c_before = c_ptr;
+							c_ptr++;	
+						}
+						//last token treatment
+						if(*c_ptr){ //not quit because end
+							assert(*c_ptr == '-');
+							if(*(c_ptr++)){
+								char* option_name = ++c_ptr;
+								//do something	
+							}
+						}
+					}else{ //normal argument
+						if(argState = OPTION){
+							//belong to the argument treatment						
+						}
+						else{
+							//just record the position and store to command->file array
+							//if not (recognized but not a file) then don't put to array
+							argPos++;
+						}
+						argState = MAIN;
+					}
+		    
                     state = SIMPLE_NO;
                     if(curCmdWordIndex + 1>= curCmdWordMax){
                         curCmd->u.word = checked_grow_alloc(curCmd->u.word,&curCmdWordMax);
@@ -652,6 +692,7 @@ init_command(void){
 	cmd->status = -1;
 	cmd->input = 0;
 	cmd->output = 0;
+	cmd->u.arg_files.size = 0;
 	return cmd;
 }
 
@@ -688,11 +729,5 @@ int is_first_prior(enum command_type type1, enum command_type type2){
 command_t
 read_command_stream (command_stream_t s)
 { 
-	/*command_t ss = parse_Command(s,0);
-	printf("%d type\n",SIMPLE_COMMAND);
-	command_t aa = ss->u.subshell_command;
-	printf("root is %d, left is %d, right is %d\n",aa->type,aa->u.command[0]->type, aa->u.command[1]->type);
-	printf("right is $s",aa->u.command[1]->u.word[0]);
-	printf("left left is %s and %s\n",aa->u.command[0]->u.command[0]->u.word[0],aa->u.command[0]->u.command[1]->u.word[0]);
-    //*/return parse_Command(s, 0);
+    return parse_Command(s, 0);
 }

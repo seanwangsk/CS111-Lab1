@@ -5,6 +5,7 @@ typedef struct file_tracker *file_tracker_t;
 typedef struct cmd_queue* cmd_queue_t;
 typedef struct file* file_t;
 typedef struct file_array* file_array_t;
+typedef struct option* option_t;
 
 enum command_type
   {
@@ -35,7 +36,7 @@ struct command
 
     // for SIMPLE_COMMAND:
     char **word;
-
+	struct file_array arg_files;
     // for SUBSHELL_COMMAND:
     struct command *subshell_command;
   } u;
@@ -57,6 +58,9 @@ struct file
 {
 	char* name;
 	int op_type;//0 for read, 1 for write
+	//SK: New here for analyzing
+	int position;
+	char* operation; 
 };
 
 struct file_array{
@@ -89,4 +93,9 @@ struct cmd_queue
     struct cmd_queue *next;
 };
 
-
+struct option
+{
+	char* name;
+	int take_arg;//0 as no, 1 as yes
+	int op; //0 as read, 1 as write, 2 as not applicable(if take no arg)
+}
