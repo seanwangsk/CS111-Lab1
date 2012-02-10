@@ -41,3 +41,25 @@ In test 2, multiple commands read and write to multiple files. Each file may onl
 In test 3, multiple commands read and write to multiple files. Each file may be written multiple times. There are complicated read and write dependency among the commands. The results show that the batch execution sequence is correct. Still, inside each batch, terminal output may not be correct.
 
 In the Testcases folder, are the test cases we use.
+
+
+
+
+Design1:
+1. Create a database to record the application
+Table app:	id <app name> type 
+Table option:	id <-o> <input?1:0>
+Table sequence: id <#>  <input?1:0>
+
+type: by option or by sequence or both
+
+2. Whenever read a new command (Word[0]) if in the data base, then parse it
+   If not, parse it into option & sequence
+   		record its open syscall
+		map the relationship
+		update the database
+
+3. Need to do:
+	Linux file naming mechanism
+	trace the close syscall (dead lock problem)
+	whether ptrace will slow down performance

@@ -1,11 +1,37 @@
 // UCLA CS 111 Lab 1 command internals
 #include <stdlib.h>
+typedef struct command_stream *command_stream_t;
+typedef struct command *command_t;
 typedef struct command_unit *command_unit_t; 
 typedef struct file_tracker *file_tracker_t;
 typedef struct cmd_queue* cmd_queue_t;
 typedef struct file* file_t;
 typedef struct file_array* file_array_t;
-typedef struct option* option_t;
+typedef struct cmd_option* cmd_option_t;
+
+
+struct file
+{
+	char* name;
+	int op_type;//0 for read, 1 for write, 2 for unknown
+	//SK: New here for analyzing
+	int position;
+	char* option; 
+};
+
+struct file_array{
+	file_t array;
+	int size;
+};
+
+
+struct cmd_option
+{
+	char* name;
+	int reqarg;//0 as no, 1 as yes
+	int op; //0 as read, 1 as write, 2 as not applicable(if take no arg)
+	int known;
+};
 
 enum command_type
   {
@@ -29,6 +55,8 @@ struct command
   char *input;
   char *output;
 
+  int cmdId;
+  file_array_t arg_files;
   union
   {
     // for AND_COMMAND, SEQUENCE_COMMAND, OR_COMMAND, PIPE_COMMAND:
@@ -36,7 +64,6 @@ struct command
 
     // for SIMPLE_COMMAND:
     char **word;
-	struct file_array arg_files;
     // for SUBSHELL_COMMAND:
     struct command *subshell_command;
   } u;
@@ -51,21 +78,6 @@ struct command_stream
 	size_t maxsize;
 	unsigned int ptrIndex;
 	int curLineNum;
-};
-
-
-struct file
-{
-	char* name;
-	int op_type;//0 for read, 1 for write
-	//SK: New here for analyzing
-	int position;
-	char* operation; 
-};
-
-struct file_array{
-	file_t array;
-	int size;
 };
 
 struct command_unit
@@ -93,9 +105,9 @@ struct cmd_queue
     struct cmd_queue *next;
 };
 
-struct option
-{
-	char* name;
-	int take_arg;//0 as no, 1 as yes
-	int op; //0 as read, 1 as write, 2 as not applicable(if take no arg)
-}
+file_t create_file(char* name);
+cmd_option_t create_new_cmd_option(char* name);
+command_t create_command(void);
+command_stream_t create_command_stream(void);
+file_array_t create_file_array(int maxsize);
+void add_arg_file(command_t cmd, struct file file);

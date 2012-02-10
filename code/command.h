@@ -1,9 +1,6 @@
 // UCLA CS 111 Lab 1 command interface
 #include <stdlib.h>
-typedef struct command *command_t;
-typedef struct command_stream *command_stream_t;
-
-
+#include "command-internals.h"
 /* Create a command stream from LABEL, GETBYTE, and ARG.  A reader of
    the command stream will invoke GETBYTE (ARG) to get the next byte.
    GETBYTE will return the next input byte, or a negative number

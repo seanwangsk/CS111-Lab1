@@ -60,33 +60,38 @@ main (int argc, char **argv)
 
   command_t last_command = NULL;
   command_t command;
-    
-    
-  //initialize the file trackers  
-    trackers = NULL;
-    tracker_index = 0;
-    tracker_size = 0;
-    
-  while ((command = read_command_stream (command_stream)))
+  
+  trackers = NULL;
+  tracker_index = 0;
+  tracker_size = 0;
+
+  open_db();
+  	while ((command = read_command_stream (command_stream)))
     {
-      if (print_tree)
-	{
-	  printf ("# %d\n", command_number++);
-	  print_command (command);
-	}
-      else
-	{
+    	if (print_tree)
+		{
+		  printf ("# %d\n", command_number++);
+			int i;
+			for(i=0;i<command->arg_files->size;i++){
+				struct file f = command->arg_files->array[i];
+				printf("f name is %s, op_type is %d, position is %d, option is %s\n",
+					f.name,f.op_type,f.position,f.option);
+			}
+		  print_command (command);
+		}
+      	else
+		{
 #ifdef  DEBUG
-        printf ("# %d\n", command_number++);
+        	printf ("# %d\n", command_number++);
 #endif
-	  last_command = command;
-	  execute_command (command, time_travel);
-	}
+	  		last_command = command;
+	  		execute_command (command, time_travel);
+		}	
     }
   if(time_travel){
 	execute_command_list();
   }
 
+  close_db();
   return print_tree || !last_command ? 0 : command_status (last_command);
-    
 }

@@ -1,7 +1,6 @@
 // UCLA CS 111 Lab 1 command printing, for debugging
 
 #include "command.h"
-#include "command-internals.h"
 
 #include <stdio.h>
 #include <stdlib.h>

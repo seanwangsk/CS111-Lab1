@@ -1,7 +1,6 @@
 // UCLA CS 111 Lab 1 command reading
 
 #include "command.h"
-#include "command-internals.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <error.h>
@@ -9,8 +8,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
-#define initsize 100//some problem
-
+#ifndef initsize
+#define initsize 100
+#endif
 //#define Debug 0 //for Debug printf
 
 enum token_state{
@@ -22,7 +22,6 @@ enum token_state{
 
 int isNormalChar(char);
 void init_buffer(char**, char**);
-void init_command_stream(command_stream_t*);
 void change_last_token(command_stream_t, char*);
 void add_token(command_stream_t, char*,int);
 int isCombineToken(char* token);
@@ -32,6 +31,14 @@ int get_command_type(char* token);
 //command_t parseSubshell(command_stream_t);
 //command_t parse_Command(command_stream_t, int);
 
+char* 
+toString(char c){
+	char* tmp = checked_malloc(2*sizeof(char));
+	tmp[0] = c;
+	tmp[1] = '\0';
+	return tmp;			
+}
+
 
 //convert the input file char stream into token stream, ignore the comments
 command_stream_t
@@ -39,8 +46,7 @@ make_command_stream (int (*get_next_byte) (void *),
 		     void *get_next_byte_argument)
 {
 
-  command_stream_t cmdStm;
-  init_command_stream(&cmdStm);   
+  command_stream_t cmdStm = create_command_stream();   
 
   enum token_state state = NORMAL;
 
@@ -113,10 +119,7 @@ make_command_stream (int (*get_next_byte) (void *),
 			case ';':
 				add_token(cmdStm,buffer,ptr-buffer);
 				init_buffer(&buffer,&ptr);
-				char* tmp = checked_malloc(2*sizeof(char));
-				tmp[0] = cGet;
-				tmp[1] = '\0';
-				add_token(cmdStm,tmp,1); //also add themselves
+				add_token(cmdStm,toString(cGet),1); //also add themselves
 				state = NORMAL;
 				break;
 			default: //normal word
@@ -168,15 +171,6 @@ init_buffer(char** buffer, char**ptr){
 }
 
 void
-init_command_stream(command_stream_t* s){
-	(*s) = checked_malloc(sizeof(struct command_stream));
-	(*s)->tokens = checked_malloc(initsize*sizeof(char*));
-	(*s)->size = 0;
-	(*s)->ptrIndex = 0;
-	(*s)->maxsize = initsize*sizeof(char*);
-}
-
-void
 change_last_token(command_stream_t s,char* token){
 	s->tokens[s->ptrIndex-1] = token;
 }
@@ -205,7 +199,7 @@ enum command_state{
     SUBSHELL_FINISH,
 };
 
-enum arg_state{
+enum arg_belong{
 	MAIN,
 	OPTION
 };
@@ -243,7 +237,7 @@ command_t parse_Command(command_stream_t, int);
 
 command_t complete_command(command_t, command_t*);
 
-command_t init_command(void);
+command_t create_command(void);
 
 
 command_t 
@@ -262,6 +256,47 @@ parse_subshell(command_stream_t s){
     return subCmd;
 }
 
+struct Arg_Status{
+	int argPos;
+	cmd_option_t waitOption;
+	enum arg_belong argBelong;
+	int cmdId;
+};
+
+struct Arg_Status
+init_arg_status(int appId){
+	struct Arg_Status as;
+	as.argPos = 0;
+	as.waitOption=NULL;
+	as.argBelong=MAIN;
+	as.cmdId = appId;
+	return as;
+}
+
+void
+wait_arg_finished(struct Arg_Status *argStatus){
+	argStatus->argBelong = MAIN;
+	free(argStatus->waitOption);
+	argStatus->waitOption=NULL;
+}
+
+void
+detect_no_arg_option(struct Arg_Status * argStatus){
+	if(argStatus->waitOption != NULL){
+		//the former wait option has been clarified(no argument)
+		assert(argStatus->argBelong==OPTION);
+		if(!argStatus->waitOption->known){
+			argStatus->waitOption->reqarg = 0;
+			argStatus->waitOption->op = 2;
+			insert_option(argStatus->cmdId,argStatus->waitOption);
+		}
+		else{
+			//check
+		}
+		wait_arg_finished(argStatus);
+	}
+}
+
 
 command_t
 parse_Command(command_stream_t s, int isSub)
@@ -269,8 +304,7 @@ parse_Command(command_stream_t s, int isSub)
 #ifdef Debug     
     printf("get into parse_command and isSubshell = %d\n",isSub);
 #endif
-    command_t curCmd = checked_malloc(sizeof(struct command));
-    curCmd->type = SIMPLE_COMMAND;
+	command_t curCmd = create_command();
     command_t cmdBuffer = NULL;
     
     int haveCmd = 0;
@@ -281,13 +315,11 @@ parse_Command(command_stream_t s, int isSub)
     
     enum command_state state = SIMPLE_INIT;   
     //SK: for argument parsing
-    enum arg_state argState = MAIN;
-    option_t lastOption = NULL;
-	int argPos = 0;
+	struct Arg_Status argStatus = init_arg_status(-1);
     
     while(s->ptrIndex < s->size){
         char* token = s->tokens[s->ptrIndex];
-	s->ptrIndex++;
+		s->ptrIndex++;
 #ifdef Debug     
         //printf("#%d token is %s\n",s->curLineNum,token);
         //printf("i index = %d\n",s->ptrIndex);
@@ -332,18 +364,22 @@ parse_Command(command_stream_t s, int isSub)
                 else if(isNormalToken(token)){
 					if(haveCmd!=0 && cmdBuffer == NULL){
 						curCmd = complete_command(curCmd,&cmdBuffer);
-					cmdBuffer = push_command_buffer(curCmd,";");
-					curCmd = init_command();
-					//haveCmd = 0;
+						cmdBuffer = push_command_buffer(curCmd,";");
+						curCmd = create_command();
+						//haveCmd = 0;
 					}
                     curCmd->u.word = checked_malloc(initsize*sizeof(char*));
                     curCmdWordMax = initsize * sizeof(char*);
                     curCmd->u.word[0] = token;
 					curCmd->u.word[1] = NULL;
+				 	curCmd->arg_files = create_file_array(initsize);
                     curCmdWordIndex = 1; 
-					argState = MAIN;
-					argPos = 0;
-					lastOption = NULL;t
+					int cmdId = query_cmd_id(token);
+					if(cmdId<0){ //not found
+						cmdId = insert_cmd(token);
+					}
+					curCmd->cmdId = cmdId;
+					argStatus = init_arg_status(cmdId);
                     state = SIMPLE_NO;
                 }
                 else{
@@ -356,6 +392,7 @@ parse_Command(command_stream_t s, int isSub)
 #endif
                 //XIA: for subshell
                 if((isEqual(token,")"))&&(isSub != 0)){
+					detect_no_arg_option(&argStatus);
                     curCmd = complete_command(curCmd,&cmdBuffer);
 #ifdef Debug
                     printf("returning from subshell from SIMPLE_NO\n");
@@ -363,24 +400,24 @@ parse_Command(command_stream_t s, int isSub)
                     return curCmd; 
                 }
                 else if(isEqual(token,"\n")||isEqual(token,";")){
+					detect_no_arg_option(&argStatus);
+					curCmd = complete_command(curCmd,&cmdBuffer);
+					state = SIMPLE_INIT;
                     //XIA: for subshell
                     if(isSub != 0){
                        //ignore \n
-			curCmd = complete_command(curCmd,&cmdBuffer);
-			state = SIMPLE_INIT;
-			haveCmd = 1;
+						haveCmd = 1;
                     }
-                    else
-                    {
-                        curCmd = complete_command(curCmd,&cmdBuffer);
-                        state = SIMPLE_INIT;
+                    else{
                         return curCmd;
                     }
                 }
                 else if(isEqual(token,"<")){
+					detect_no_arg_option(&argStatus);
                     state = SIMPLE_INPUT;
                 }
                 else if(isEqual(token, ">")){
+					detect_no_arg_option(&argStatus);
                     state = SIMPLE_OUTPUT;
                 }
                 else if(isNormalToken(token)){
@@ -388,59 +425,102 @@ parse_Command(command_stream_t s, int isSub)
                     printf("normal word in SIMPLE_NO\n");
 #endif
 					//SK: Add argument analysis here
-					assert(curCmdWordIndex>0)//the first one is the application name, not an argument
-					
+					assert(curCmdWordIndex>0);//the first one is the application name, not an argument
 					if(token[0]=='-'){
-						if(argState == OPTION){
-							//the last option should be treated differently
-						}
-						argState = OPTION;
 						char* c_ptr = ++token;
-						char* c_before = NULL;
+						assert(*c_ptr);//suppose always char follows -
 						while(*c_ptr && *c_ptr!='-'){	//single - 
-							if(c_before!=NULL){ //such token takes no args
-							  //if cognized, contradict to database?
-							  //else
-							  //insert  id,c_before,0,0
+							detect_no_arg_option(&argStatus);
+							argStatus.argBelong = OPTION;
+							argStatus.waitOption = query_option(argStatus.cmdId,toString(*c_ptr));
+							if(argStatus.waitOption==NULL){//unknown
+								argStatus.waitOption = create_new_cmd_option(toString(*c_ptr));
 							}
-							c_before = c_ptr;
-							c_ptr++;	
+							c_ptr++;
 						}
 						//last token treatment
 						if(*c_ptr){ //not quit because end
-							assert(*c_ptr == '-');
-							if(*(c_ptr++)){
-								char* option_name = ++c_ptr;
-								//do something	
+							assert(*c_ptr == '-'); //--situation
+							c_ptr++;
+							if(*c_ptr){
+								detect_no_arg_option(&argStatus);
+								argStatus.argBelong = OPTION;
+								argStatus.waitOption = query_option(argStatus.cmdId,c_ptr);
+								if(argStatus.waitOption==NULL){//unknown
+									argStatus.waitOption = create_new_cmd_option(c_ptr);
+								}
 							}
 						}
-					}else{ //normal argument
-						if(argState = OPTION){
+					}else{ //normal argument, maybe file
+						//file_t curArg = checked_malloc(sizeof(struct file));
+						//curArg
+						file_t f = create_file(token);
+						if(argStatus.argBelong == OPTION){
 							//belong to the argument treatment						
+							assert(argStatus.waitOption!=NULL);
+							if(argStatus.waitOption->known){
+								if(argStatus.waitOption->reqarg){
+									f->op_type = argStatus.waitOption->op;
+									f->option = argStatus.waitOption->name;
+									f->position = -1;
+									add_arg_file(curCmd,*f);
+								}
+								else{
+									f->position = argStatus.argPos;
+									int fop = query_position(argStatus.cmdId,argStatus.argPos);
+									if(fop<0){ //unknown
+										f->op_type = 2;
+										add_arg_file(curCmd,*f);
+									}
+									else if(fop < 2){ //0 or 1, this arg should be afile
+										f->op_type = fop;
+										add_arg_file(curCmd,*f);
+									}//otherwise this is just not a file
+									argStatus.argPos++;
+								}
+							}
+							else{
+								f->option = argStatus.waitOption->name;
+								f->op_type = 2;
+								add_arg_file(curCmd,*f);
+							}
+							wait_arg_finished(&argStatus);
 						}
 						else{
-							//just record the position and store to command->file array
-							//if not (recognized but not a file) then don't put to array
-							argPos++;
+							assert(argStatus.waitOption==NULL);
+							f->position = argStatus.argPos;
+							int fop = query_position(argStatus.cmdId,argStatus.argPos);
+							if(fop<0){ //unknown
+								f->op_type = 2;
+								add_arg_file(curCmd,*f);
+							}
+							else if(fop < 2){ //0 or 1, this arg should be afile
+								f->op_type = fop;
+								add_arg_file(curCmd,*f);
+							}//otherwise this is just not a file
+							argStatus.argPos++;
 						}
-						argState = MAIN;
+						printf("before free f\n");
+						free(f);
+						printf("after free f\n");
+						argStatus.argBelong = MAIN;
 					}
-		    
                     state = SIMPLE_NO;
                     if(curCmdWordIndex + 1>= curCmdWordMax){
                         curCmd->u.word = checked_grow_alloc(curCmd->u.word,&curCmdWordMax);
                     }
                     curCmd->u.word[curCmdWordIndex] = token;
-		    curCmd->u.word[curCmdWordIndex+1] = NULL;
+		    		curCmd->u.word[curCmdWordIndex+1] = NULL;
                     curCmdWordIndex++;
                 }
                 else if(isCombineToken(token)){
+					detect_no_arg_option(&argStatus);
 #ifdef Debug
                     printf("combining in SIMPLE_NO\n");
 #endif
                     curCmd = complete_command(curCmd,&cmdBuffer);
                     cmdBuffer = push_command_buffer(curCmd, token);
-                    curCmd = init_command();
+                    curCmd = create_command();
                     state = SIMPLE_INIT;
                 }
                 else{
@@ -505,7 +585,7 @@ parse_Command(command_stream_t s, int isSub)
                 else if(isCombineToken(token)){
                     curCmd = complete_command(curCmd,&cmdBuffer);
                     cmdBuffer = push_command_buffer(curCmd, token);			
-                    curCmd = init_command();
+                    curCmd = create_command();
                     state = SIMPLE_INIT;
                 }
                 else{
@@ -554,7 +634,7 @@ parse_Command(command_stream_t s, int isSub)
                 else if(isCombineToken(token)){
                     curCmd = complete_command(curCmd,&cmdBuffer);
                     cmdBuffer = push_command_buffer(curCmd, token);                 
-                    curCmd = init_command();
+                    curCmd = create_command();
                     state = SIMPLE_INIT;
                 }
                 else{
@@ -575,7 +655,7 @@ parse_Command(command_stream_t s, int isSub)
                         //ignore \n//need to implement sequence command here!!!!!!!!
 			curCmd = complete_command(curCmd,&cmdBuffer);
 			cmdBuffer = push_command_buffer(curCmd, ";");                 
-                    	curCmd = init_command();
+                    	curCmd = create_command();
                     }
                     else//if not insdie subShell then return
                     {
@@ -596,7 +676,7 @@ parse_Command(command_stream_t s, int isSub)
 #endif
                     curCmd = complete_command(curCmd,&cmdBuffer);
                     cmdBuffer = push_command_buffer(curCmd, token);
-                    curCmd = init_command();
+                    curCmd = create_command();
                     state = SIMPLE_INIT;
                 }
                 else if(s->ptrIndex >= s->size - 1){
@@ -619,7 +699,8 @@ parse_Command(command_stream_t s, int isSub)
                 
         
     }
-    
+    //End of file treatment 
+	detect_no_arg_option(&argStatus);
     s->curLineNum--; // because function getc will return an additional \n
     if(isSub==0)
     {
@@ -685,16 +766,7 @@ complete_command(command_t curCmd, command_t *cmdBuffer){
 	return cmd_finished;
 }
 
-command_t
-init_command(void){
-	command_t cmd = checked_malloc(sizeof(struct command));
-        cmd->type = SIMPLE_COMMAND;
-	cmd->status = -1;
-	cmd->input = 0;
-	cmd->output = 0;
-	cmd->u.arg_files.size = 0;
-	return cmd;
-}
+
 
 command_t 
 push_command_buffer(command_t curCmd, char* token){

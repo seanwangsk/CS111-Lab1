@@ -1,7 +1,6 @@
 // UCLA CS 111 Lab 1 command execution
 
 #include "command.h"
-#include "command-internals.h"
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -40,14 +39,6 @@ void execute_command_list(void);
 static int lineNum = 1;
 
 //266214CA75
-
-file_array_t
-create_file_array(){
-	file_array_t fArray = checked_malloc(sizeof(struct file_array));
-	fArray->array = checked_malloc(initsize*sizeof(struct file));
-	fArray->size = 0;
-	return fArray;
-}
 
 void
 add_without_dup(file_array_t fArray, char* name, int op_type){
@@ -204,7 +195,7 @@ analyze_command(command_t c)
     command_unit_t cur_command_unit = checked_malloc(sizeof(struct command_unit));
     cur_command_unit->block = 0;
     cur_command_unit->cmd = c;
-    cur_command_unit->dependFiles = create_file_array();
+    cur_command_unit->dependFiles = create_file_array(initsize);
     cmd_file_analysis(c, cur_command_unit->dependFiles);
    
     //add the files into the trackers
@@ -516,14 +507,14 @@ cmd_file_analysis(command_t c, file_array_t dependFiles)
         {
 	    add_without_dup(dependFiles, c->input, 0);
         }
-	if(c->output != 0)
+		if(c->output != 0)
         {
              add_without_dup(dependFiles, c->output, 1);
         }
         int i = 1;
         while( c->u.word[i]!= NULL)
         {
-            add_without_dup(dependFiles, c->u.word[i], 0);
+			add_without_dup(dependFiles, c->u.word[i], 0);
             i++;
         }
     }   
