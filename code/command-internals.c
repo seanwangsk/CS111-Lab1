@@ -1,5 +1,6 @@
 #include "command-internals.h"
 #include "alloc.h"
+#include <string.h>
 #include <stdlib.h>
 #define initsize 100
 
@@ -9,7 +10,8 @@ create_file(char* name){
 	f->name = name;
 	f->op_type = 2;
 	f->position = -1;
-	f->operation = NULL;
+	f->option = NULL;
+	f->update = 0;
 	return f;
 }
 
@@ -54,3 +56,39 @@ create_command_stream(void){
 	stream->maxsize = initsize * sizeof(char*);
 	return stream;
 }
+int 
+isEqual(char* a, char* b)
+{
+	int result = strcmp(a,b)?0:1;
+	return result;
+}
+
+
+void
+add_without_dup(file_array_t fArray, char* name, int op_type){
+	int i;
+	for(i = 0; i<fArray->size; i++){
+		if(isEqual(fArray->array[i].name,name)){
+			fArray->array[i].op_type = fArray->array[i].op_type | op_type;  
+		        return;
+		}
+	}
+	//not duplicated
+	fArray->array[fArray->size].name = name;
+	fArray->array[fArray->size].op_type = op_type;
+	fArray->size++; 
+}
+
+
+file_t
+find_in_array(file_array_t farray, char* name){
+	int i;
+	for(i = 0; i < farray->size; i++){
+		printf("examed file %s\n",farray->array[i].name);
+		if(isEqual(name,farray->array[i].name)){
+			return &(farray->array[i]);
+		}
+	}
+	return NULL;
+}
+

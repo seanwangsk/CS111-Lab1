@@ -205,13 +205,6 @@ enum arg_belong{
 };
 
 int 
-isEqual(char* a, char* b)
-{
-	int result = strcmp(a,b)?0:1;
-	return result;
-}
-
-int 
 isNormalToken(char* token)
 {
 	return (!isCombineToken(token) 
@@ -427,7 +420,7 @@ parse_Command(command_stream_t s, int isSub)
 					//SK: Add argument analysis here
 					assert(curCmdWordIndex>0);//the first one is the application name, not an argument
 					if(token[0]=='-'){
-						char* c_ptr = ++token;
+						char* c_ptr = token+1;
 						assert(*c_ptr);//suppose always char follows -
 						while(*c_ptr && *c_ptr!='-'){	//single - 
 							detect_no_arg_option(&argStatus);
@@ -500,9 +493,7 @@ parse_Command(command_stream_t s, int isSub)
 							}//otherwise this is just not a file
 							argStatus.argPos++;
 						}
-						printf("before free f\n");
 						free(f);
-						printf("after free f\n");
 						argStatus.argBelong = MAIN;
 					}
                     state = SIMPLE_NO;

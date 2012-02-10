@@ -71,12 +71,11 @@ main (int argc, char **argv)
     	if (print_tree)
 		{
 		  printf ("# %d\n", command_number++);
-			int i;
-			for(i=0;i<command->arg_files->size;i++){
-				struct file f = command->arg_files->array[i];
-				printf("f name is %s, op_type is %d, position is %d, option is %s\n",
-					f.name,f.op_type,f.position,f.option);
-			}
+		  int i;
+		  for(i=0;i<command->arg_files->size;i++){
+			  struct file f = command->arg_files->array[i];
+			  printf("f name is %s, op_type is %d, position is %d, option is %s\n", f.name,f.op_type,f.position,f.option);
+		  }
 		  print_command (command);
 		}
       	else

@@ -1,6 +1,5 @@
 // UCLA CS 111 Lab 1 command execution
 
-#include "command.h"
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -10,10 +9,16 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include "alloc.h"
 #include <assert.h>
-#define initsize 100
 
+#include "alloc.h"
+#include "command.h"
+#include "sys_util.h"
+#include "sys/ptrace.h"
+#include <sys/reg.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#define initsize 100
 //#define DEBUG
 
 extern file_tracker_t *trackers;
@@ -27,7 +32,6 @@ cmd_queue_t cmds_to_exec_tail;
 
 void cmd_file_analysis(command_t, file_array_t);
 command_unit_t analyze_command(command_t c);
-int isEqual(char* a, char* b);
 void add_tracker(char *new);
 void add_cmd_into_queue(command_unit_t cmd, int index, int op_type);
 void check_file_block(command_unit_t cmd);
@@ -39,21 +43,6 @@ void execute_command_list(void);
 static int lineNum = 1;
 
 //266214CA75
-
-void
-add_without_dup(file_array_t fArray, char* name, int op_type){
-	int i;
-	for(i = 0; i<fArray->size; i++){
-		if(isEqual(fArray->array[i].name,name)){
-			fArray->array[i].op_type = fArray->array[i].op_type | op_type;  
-		        return;
-		}
-	}
-	//not duplicated
-	fArray->array[fArray->size].name = name;
-	fArray->array[fArray->size].op_type = op_type;
-	fArray->size++; 
-}
 
 
 int
@@ -153,29 +142,99 @@ exec_cmd (command_t c){
 				dup2(oFD,1);
 				close(oFD);
 			}
+			//SK: new for design project
+			ptrace(PTRACE_TRACEME,0,NULL,NULL);
 			execvp(c->u.word[0],c->u.word);
 			perror(c->u.word[0]); //something wrong happen so this line is executed
 			return 0;
 		}
 		else if(p>0){	//father
 			int status;
-			int pid = wait(&status);
-			if(pid>0){
-				if(WIFEXITED(status)){
-					//[New] add analysis here
-					return !WEXITSTATUS(status);
-				}
-				else if(WIFSIGNALED(status)){
-					return !WTERMSIG(status);
+			long orig_eax;
+			long params[3];
+			char *str, *laddr;
+			int toggle = 0;
+			while(1){
+				pid_t child = wait(&status);
+				if(child>0){
+				//[New] add analysis here
+					if(WIFEXITED(status)){
+						int result = !WEXITSTATUS(status);
+						if(result!=0){ //success
+							//update to database
+							int i;
+							for(i=0;i<c->arg_files->size;i++){
+								struct file f = c->arg_files->array[i];
+								if(f.update){ //option
+									if(f.option!=NULL){
+										assert(f.position<0);
+										cmd_option_t op = create_new_cmd_option(f.option);
+										op->reqarg = 1;
+										op->op = f.op_type;
+										insert_option(c->cmdId,op);
+										free(op);
+									}	
+									else{ //position
+										assert(f.position>=0);
+										insert_arg(c->cmdId,f.position,f.op_type);
+									}
+								}
+							}
+						}
+						return result;
+					}
+					else if(WIFSIGNALED(status)){
+						return !WTERMSIG(status);
+					}
+					else{
+						//Leaving the error part away
+						//perror("Command execution is interrupted");
+						//	return 0;
+						orig_eax = ptrace(PTRACE_PEEKUSER,
+							   child, 4 * ORIG_EAX,
+							   NULL);
+						if(orig_eax == SYS_open) {
+							if(toggle == 0) { /*in syscall*/
+								toggle = 1;
+								params[0] = ptrace(PTRACE_PEEKUSER,
+													  child, 4 * EBX,
+													  NULL);
+								params[1] = ptrace(PTRACE_PEEKUSER,
+													  child, 4 * ECX,
+													  NULL);
+								str = (char *)malloc(4096);
+								getdata(child, params[0], str,4096);
+								//printf("opening %s\n",str);
+								long flag = params[1];
+								flag = flag & 3;	              
+								if(flag == 0) printf("read only\n");
+								if(flag == 1) printf("write only\n");
+								if(flag == 2) printf("read write\n");
+								//add analyze here
+								file_t f = find_in_array(c->arg_files,str);
+								if(f!=NULL){//find
+									printf("find arg %s\n",str);
+									if(f->op_type==2){
+										//unknown
+										f->op_type = flag&1;//0 or 1
+										f->update = 1;
+									}
+									else{	
+										//check
+									}
+								}
+							}
+							else { /*out of syscall*/
+								  toggle = 0;
+							}
+						}
+						ptrace(PTRACE_SYSCALL, child, NULL, NULL);
+					}
 				}
 				else{
-					perror("Command execution is interrupted");
+					perror("wait");
 					return 0;
 				}
-			}
-			else{
-				perror("wait");
-				return 0;
 			}
 		}
 		else{	//cannot create child process
@@ -511,12 +570,24 @@ cmd_file_analysis(command_t c, file_array_t dependFiles)
         {
              add_without_dup(dependFiles, c->output, 1);
         }
+		/*
         int i = 1;
         while( c->u.word[i]!= NULL)
         {
 			add_without_dup(dependFiles, c->u.word[i], 0);
             i++;
-        }
+        }*/
+		int i = 0;
+		for(i=0;i<c->arg_files->size;i++){
+			struct file f = c->arg_files->array[i];
+			if(f.op_type == 2){//unknown, treat as write{
+				add_without_dup(dependFiles,f.name,1);
+			}
+			else{
+				add_without_dup(dependFiles,f.name,f.op_type);
+			}
+		}
+
     }   
     else if(c->type == AND_COMMAND || c->type == OR_COMMAND || c->type == PIPE_COMMAND || c->type == SEQUENCE_COMMAND)
     {
@@ -563,7 +634,7 @@ void
 execute_command (command_t c, int time_travel)
 {
     if(time_travel == 0){   //normal mode
-	exec_cmd(c);	
+		exec_cmd(c);	
     }
     else                    //time travel mode
     {   
@@ -572,8 +643,8 @@ execute_command (command_t c, int time_travel)
 	//Will return the command_unit_t;
         command_unit_t cmd_u = analyze_command(c);
 	//add the command into whole commands queue
-	add_to_cmds_to_exec(cmd_u);	
-	lineNum++;
+		add_to_cmds_to_exec(cmd_u);	
+		lineNum++;
     }   
 }
 

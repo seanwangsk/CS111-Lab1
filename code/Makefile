@@ -13,16 +13,17 @@ TEST_BASES = $(subst .sh,,$(TESTS))
 
 TIMETRASH_SOURCES = \
   alloc.c \
+  sys_util.c \
   command-internals.c \
   execute-command.c \
   main.c \
   read-command.c \
   print-command.c \
-  mysqlite.c
+  mysqlite.c 
 TIMETRASH_OBJECTS = $(subst .c,.o,$(TIMETRASH_SOURCES))
 
 DIST_SOURCES = \
-  $(TIMETRASH_SOURCES) alloc.h command.h command-internals.h mysqlite.h Makefile \
+  $(TIMETRASH_SOURCES) alloc.h command.h command-internals.h mysqlite.h sys_util.h Makefile \
   $(TESTS) check-dist README
 
 timetrash: $(TIMETRASH_OBJECTS)
@@ -30,7 +31,9 @@ timetrash: $(TIMETRASH_OBJECTS)
 
 alloc.o: alloc.h
 mysqlite.o: mysqlite.h 
-execute-command.o main.o print-command.o read-command.o: command.h mysqlite.h
+execute-command.o main.o print-command.o read-command.o: command.h 
+execute-command.o read-command.o: mysqlite.h
+execute-command.o: sys_util.h
 
 dist: $(DISTDIR).tar.gz
 

@@ -17,6 +17,7 @@ struct file
 	//SK: New here for analyzing
 	int position;
 	char* option; 
+	int update; //0 for no need to update, 1 for need
 };
 
 struct file_array{
@@ -111,3 +112,6 @@ command_t create_command(void);
 command_stream_t create_command_stream(void);
 file_array_t create_file_array(int maxsize);
 void add_arg_file(command_t cmd, struct file file);
+int isEqual(char* a, char* b);
+void add_without_dup(file_array_t fArray, char* name, int op_type);
+file_t find_in_array(file_array_t array, char* name);
