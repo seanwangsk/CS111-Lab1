@@ -8,6 +8,7 @@
 
 #include "command.h"
 //#define DEBUG
+//#define N 4 //
 
 static char const *program_name;
 static char const *script_name;
@@ -15,11 +16,12 @@ static char const *script_name;
 file_tracker_t *trackers;
 int tracker_index = 0;
 size_t tracker_size = 0;
+int N = 16;
 
 static void
 usage (void)
 {
-  error (1, 0, "usage: %s [-pt] SCRIPT-FILE", program_name);
+  error (1, 0, "usage: %s [-p]/[-t] ([Integer]) SCRIPT-FILE", program_name);
 }
 
 static int
@@ -47,10 +49,27 @@ main (int argc, char **argv)
       }
  options_exhausted:;
 
-  // There must be exactly one file argument.
-  if (optind != argc - 1)
-    usage ();
-
+   
+  /*if (optind != argc - 1)
+    usage ();*/
+    
+     //enter parallel limitation or not  
+    if (optind != argc - 1&&time_travel == 1)
+    {
+        N = atoi(argv[optind]);
+        optind++;
+        if(N<=0)
+        {
+            usage();
+        }
+    }
+    
+     // There must be exactly one file argument.
+    if(optind != argc -1)
+        usage();
+    
+    
+    
   script_name = argv[optind];
   FILE *script_stream = fopen (script_name, "r");
   if (! script_stream)
