@@ -452,7 +452,7 @@ parse_Command(command_stream_t s, int isSub)
 							//belong to the argument treatment						
 							assert(argStatus.waitOption!=NULL);
 							if(argStatus.waitOption->known){
-								if(argStatus.waitOption->reqarg){
+								if(argStatus.waitOption->reqarg && argStatus.waitOption->op<2){
 									f->op_type = argStatus.waitOption->op;
 									f->option = argStatus.waitOption->name;
 									f->position = -1;

@@ -165,7 +165,7 @@ exec_cmd (command_t c){
 							int i;
 							for(i=0;i<c->arg_files->size;i++){
 								struct file f = c->arg_files->array[i];
-								if(f.update){ //option
+								if(f.update||f.op_type==2){ //option
 									if(f.option!=NULL){
 										assert(f.position<0);
 										cmd_option_t op = create_new_cmd_option(f.option);
@@ -207,13 +207,13 @@ exec_cmd (command_t c){
 								//printf("opening %s\n",str);
 								long flag = params[1];
 								flag = flag & 3;	              
-								if(flag == 0) printf("read only\n");
-								if(flag == 1) printf("write only\n");
-								if(flag == 2) printf("read write\n");
+								//if(flag == 0) printf("read only\n");
+								//if(flag == 1) printf("write only\n");
+								//if(flag == 2) printf("read write\n");
 								//add analyze here
 								file_t f = find_in_array(c->arg_files,str);
 								if(f!=NULL){//find
-									printf("find arg %s\n",str);
+									//printf("find arg %s\n",str);
 									if(f->op_type==2){
 										//unknown
 										f->op_type = flag&1;//0 or 1
@@ -617,6 +617,7 @@ add_to_cmds_to_exec(command_unit_t cmd_u){
 	cmd_queue_t newGuy = checked_malloc(sizeof(struct cmd_queue));
         newGuy->cmd_unit = cmd_u;
         newGuy->next = NULL;
+		newGuy->pid = 0;
 	newGuy->cmdNum = lineNum;
 	if(cmds_to_exec == NULL) //if the whole command link is null
 	{

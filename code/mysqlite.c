@@ -63,11 +63,11 @@ query_option(int id, char* option){
 	     myOption->reqarg = sqlite3_column_int(stmt,1);
 		 myOption->known  = 1;						
 	     CALL_SQLITE(finalize(stmt));
-		printf("find\n");
+		 //printf("find\n");
 	     return myOption;
 	}
 	else {
-		printf("not find\n");
+		//printf("not find\n");
 	     CALL_SQLITE(finalize(stmt));
 	     return NULL;
 	}

@@ -84,7 +84,7 @@ file_t
 find_in_array(file_array_t farray, char* name){
 	int i;
 	for(i = 0; i < farray->size; i++){
-		printf("examed file %s\n",farray->array[i].name);
+		//printf("examed file %s\n",farray->array[i].name);
 		if(isEqual(name,farray->array[i].name)){
 			return &(farray->array[i]);
 		}
