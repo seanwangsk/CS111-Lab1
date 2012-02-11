@@ -24,7 +24,7 @@
 extern file_tracker_t *trackers;
 extern unsigned int tracker_index;           //the next empty slot for file trackers
 extern size_t tracker_size;
-
+extern int N;
 
 
 cmd_queue_t cmds_to_exec;
@@ -661,11 +661,17 @@ clear_read_write(){
 void
 execute_command_list(){
 	clear_read_write();
+    int para = 0;     //indicate how many commands are parallel executing
 	while(cmds_to_exec!=NULL){
 		//iterate to find the unblocked command to execute
 		cmd_queue_t queue_ptr = cmds_to_exec;
 		while(queue_ptr!=NULL){
+            if(para >= N)
+                break;
+
 			if(queue_ptr->cmd_unit->block==0 && queue_ptr->pid==0/*not current running*/){
+                para++; //add 1 indicating one more command is executing 
+
 #ifdef DEBUG
 				printf("cmd %d is running\n",queue_ptr->cmdNum);				
 #endif
@@ -687,6 +693,7 @@ execute_command_list(){
 		//every finished child will return to this point
 		//ret_pid indicate which command (child) is finished 
 		pid_t ret_pid = waitpid(-1,NULL,0); 
+        para--; 
 		queue_ptr = cmds_to_exec;
 		cmd_queue_t queue_ptr_before = NULL;	//the previous node for queue_ptr, used to delete node from queue
 		while(queue_ptr!=NULL){

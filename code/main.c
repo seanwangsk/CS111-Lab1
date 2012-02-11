@@ -15,6 +15,7 @@ static char const *script_name;
 file_tracker_t *trackers;
 int tracker_index = 0;
 size_t tracker_size = 0;
+int N = 128;
 
 static void
 usage (void)
@@ -46,10 +47,25 @@ main (int argc, char **argv)
       case -1: goto options_exhausted;
       }
  options_exhausted:;
-
+/*
   // There must be exactly one file argument.
   if (optind != argc - 1)
     usage ();
+  */  
+    //enter parallel limitation or not  
+    if (optind != argc - 1 && time_travel == 1)
+    {
+        N = atoi(argv[optind]);
+        optind++;
+        if(N<=0)
+        {
+            usage();
+        }
+    }
+    
+    // There must be exactly one file argument.
+    if(optind != argc -1)
+        usage();
 
   script_name = argv[optind];
   FILE *script_stream = fopen (script_name, "r");
